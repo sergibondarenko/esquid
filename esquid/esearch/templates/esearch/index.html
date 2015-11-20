@@ -1,0 +1,12 @@
+<!--{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
+-->
+{% if results_list %}
+	<ul>
+	{% for doc in results_list.hits.hits %}
+		<li>{{ doc }}</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>No results are available.</p>
+{% endif %}
