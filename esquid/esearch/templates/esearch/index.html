@@ -1,10 +1,10 @@
 <!--{% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
 -->
-{% if results_list %}
+{% if first_name %}
 	<ul>
-	{% for doc in results_list.hits.hits %}
-		<li>{{ doc }}</li>
+	{% for name in first_name %}
+		<li>{{ name }}</li>
 	{% endfor %}
 	</ul>
 {% else %}
