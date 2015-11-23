@@ -1,25 +1,115 @@
 {% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static 'esearch/style.css' %}" />
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
 {% load get_from_dict %}
 {% load get_from_source %}
 
-{% if results_list %}
-	<ul>
-	{% for name in results_list.hits.hits %}
-		<li>{{ name|get_from_source:"first_name" }} {{ name|get_from_source:"last_name" }} {{ name|get_from_source:"email" }}</li>
-	{% endfor %}
-	</ul>
-{% else %}
-	<p>No results are available.</p>
-{% endif %}
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+  	<div class="container">
+    	<h1>Tree View</h1>
+      <br>
+      <div class="row">
+        <div class="col-sm-4">
+          <div id="treeview1" class=""></div>
+        </div>
+	  </div>
 
-{% if results_list %}
-	<ul>
-	{% for name in results_list.hits.hits %}
-		<li>{{ name }}</li>
-	{% endfor %}
-	</ul>
-{% else %}
-	<p>No results are available.</p>
-{% endif %}
+      <div class="row">
+	  <h2>Test Elasticsearch output</h2>
+
+		{% if results_list %}
+			<ul>
+			{% for name in results_list.hits.hits %}
+				<li>{{ name|get_from_source:"first_name" }} {{ name|get_from_source:"last_name" }} {{ name|get_from_source:"email" }}</li>
+			{% endfor %}
+			</ul>
+		{% else %}
+			<p>No results are available.</p>
+		{% endif %}
+		
+		{% if results_list %}
+			<ul>
+			{% for name in results_list.hits.hits %}
+				<li>{{ name }}</li>
+			{% endfor %}
+			</ul>
+		{% else %}
+			<p>No results are available.</p>
+		{% endif %}
+
+    </div>
+</div> <!-- Container -->
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="{% static 'esearch/bootstrap-treeview.js' %}"></script>
+  	<script type="text/javascript">
+
+  		$(function() {
+
+        var defaultData = [
+          {
+            text: 'Parent 1',
+            href: '#parent1',
+            tags: ['4'],
+            nodes: [
+              {
+                text: 'Child 1',
+                href: '#child1',
+                tags: ['2'],
+                nodes: [
+                  {
+                    text: 'Grandchild 1',
+                    href: '#grandchild1',
+                    tags: ['0']
+                  },
+                  {
+                    text: 'Grandchild 2',
+                    href: '#grandchild2',
+                    tags: ['0']
+                  }
+                ]
+              },
+              {
+                text: 'Child 2',
+                href: '#child2',
+                tags: ['0']
+              }
+            ]
+          },
+          {
+            text: 'Parent 2',
+            href: '#parent2',
+            tags: ['0']
+          },
+          {
+            text: 'Parent 3',
+            href: '#parent3',
+             tags: ['0']
+          },
+          {
+            text: 'Parent 4',
+            href: '#parent4',
+            tags: ['0']
+          },
+          {
+            text: 'Parent 5',
+            href: '#parent5'  ,
+            tags: ['0']
+          }
+        ];
+
+        $('#treeview1').treeview({
+		  color: "#428bca",
+          data: defaultData
+        });
+
+  		});
+  	</script>
+  </body>
+</html>
 
