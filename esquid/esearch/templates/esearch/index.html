@@ -1,12 +1,25 @@
-<!--{% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
--->
-{% if first_name %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'esearch/style.css' %}" />
+{% load get_from_dict %}
+{% load get_from_source %}
+
+{% if results_list %}
 	<ul>
-	{% for name in first_name %}
+	{% for name in results_list.hits.hits %}
+		<li>{{ name|get_from_source:"first_name" }} {{ name|get_from_source:"last_name" }} {{ name|get_from_source:"email" }}</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>No results are available.</p>
+{% endif %}
+
+{% if results_list %}
+	<ul>
+	{% for name in results_list.hits.hits %}
 		<li>{{ name }}</li>
 	{% endfor %}
 	</ul>
 {% else %}
 	<p>No results are available.</p>
 {% endif %}
+
