@@ -6,16 +6,14 @@ from elasticsearch import Elasticsearch
 
 class Esearch(models.Model):
 	
-	def search_all(self):
-		es = Elasticsearch(hosts = [{"host": "localhost", "port": "9200"}])
-		res = es.search(index="facebook", body={"query": {"match_all": {}}})
-		#print(res)
-		#res = 'HELLO'
-		return res
+    def init(self, host, port):
+        self.host = host
+        self.port = port
 
-#def esearch():
-#	es = Elasticsearch(hosts = [{"host": "localhost", "port": "9200"}])
-#	res = es.search(index="facebook", body={"query": {"match_all": {}}})
-#	return res
-#
-#print(esearch())
+    def search_all(self, index):
+        self.index = index
+
+        es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
+        res = es.search(index=index, body={"query": {"match_all": {}}})
+        return res
+
