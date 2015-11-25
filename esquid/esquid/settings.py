@@ -39,7 +39,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'polls',
     'esearch',
-    'treemenus',
 )
 
 MIDDLEWARE_CLASSES = (

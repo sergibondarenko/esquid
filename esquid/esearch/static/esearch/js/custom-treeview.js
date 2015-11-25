@@ -28,7 +28,7 @@ var initSelectableTree = function() {
     onNodeSelected: function(event, node) {
       $('#selectable-output').prepend('<p>' + node.text + ' was selected</p>');
 	  //console.log(node.text);
-	  sendVarsToBackend(node.text);
+	  //sendVarsToBackend(node.text);
     },
     onNodeUnselected: function (event, node) {
       $('#selectable-output').prepend('<p>' + node.text + ' was unselected</p>');
