@@ -51,7 +51,7 @@
         </div>
 
         <div class="col-sm-4">
-          <h2>Search Logic</h2>
+          <h2>Search</h2>
           <div class="form-group">
             <label for="input-select-node" class="sr-only">Search Tree:</label>
             <input type="input" class="form-control" id="input-select-node" placeholder="Identify node..." value="Shakespeare">
@@ -59,11 +59,12 @@
           <div class="form-group">
             <button type="button" class="btn btn-success select-node" id="btn-select-node">AND</button>
             <button type="button" class="btn btn-primary select-node" id="btn-toggle-selected">OR</button>
-            <button type="button" class="btn btn-danger select-node" id="btn-unselect-node">NOT</button>
+            <button type="button" class="btn btn-warning select-node" id="btn-unselect-node">NOT</button>
+            <button type="button" class="btn btn-danger select-node" id="clear-query-field">CLEAR</button>
           </div>
 
         	<div class="events">
-        	  <h2>Events</h2>
+        	  <h2>Query</h2>
         	  <div id="selectable-output"></div>
         	</div>
 

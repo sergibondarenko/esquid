@@ -1,7 +1,7 @@
 $(function() {
 
+// Send vars from menu to backend
 var sendVarsToBackend = function(vars){
-	// Send calls from menu to backend
 	$.ajax({
 	  type: 'POST',
 	  url: 'postmenu/',
@@ -20,23 +20,27 @@ var sendVarsToBackend = function(vars){
 	}); // ajax post
 }
 
+// Init menu
 var initSelectableTree = function() {
   return $('#treeview-selectable').treeview({
   	color: "#428bca",
 	data: menuItems,
     multiSelect: $('#chk-select-multi').is(':checked'),
     onNodeSelected: function(event, node) {
-      $('#selectable-output').prepend('<p>' + node.text + ' was selected</p>');
+      $('#selectable-output').append('<p>' + node.text + ' was selected</p>');
+      //$('#selectable-output').prepend('<p>' + node.text + ' was selected</p>');
 	  //console.log(node.text);
 	  //sendVarsToBackend(node.text);
     },
     onNodeUnselected: function (event, node) {
-      $('#selectable-output').prepend('<p>' + node.text + ' was unselected</p>');
+      $('#selectable-output').append('<p>' + node.text + ' was unselected</p>');
+      //$('#selectable-output').prepend('<p>' + node.text + ' was unselected</p>');
 	  //console.log(node.text);
     }
   });
 };
 
+// Build menu
 var menuItems = {};
 var buildMenu = function(){
 	$.getJSON("/static/esearch/json/test_menu.json", function(menu_data){
@@ -87,6 +91,11 @@ $('#btn-unselect-node.select-node').on('click', function (e) {
 
 $('#btn-toggle-selected.select-node').on('click', function (e) {
   $selectableTree.treeview('toggleNodeSelected', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+});
+
+// Clear query field
+$('#clear-query-field.select-node').on('click', function (e) {
+	$('#selectable-output').empty();
 });
 
 });
