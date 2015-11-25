@@ -30,7 +30,7 @@ var initSelectableTree = function() {
       $('#selectable-output').append('<p>' + node.text + ' was selected</p>');
       //$('#selectable-output').prepend('<p>' + node.text + ' was selected</p>');
 	  //console.log(node.text);
-	  sendVarsToBackend(node.text);
+	  //sendVarsToBackend(node.text);
     },
     onNodeUnselected: function (event, node) {
       $('#selectable-output').append('<p>' + node.text + ' was unselected</p>');
@@ -96,6 +96,16 @@ $('#btn-toggle-selected.select-node').on('click', function (e) {
 // Clear query field
 $('#clear-query-field.select-node').on('click', function (e) {
 	$('#selectable-output').empty();
+});
+
+// Free search in Elasticsearch
+$('#input-free-search').keypress(function (e) {
+	if(e.which == 13){
+		e.preventDefault();
+		console.log('Free');
+		var search_query = $('#input-free-search').val();
+		sendVarsToBackend(search_query);
+	}
 });
 
 });
