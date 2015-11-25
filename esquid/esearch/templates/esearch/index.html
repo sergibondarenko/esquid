@@ -15,13 +15,18 @@
       <br>
       <div class="row">
         <hr>
-        <h2>Tree Menu</h2>
-		<!--
+        <h2>Search</h2>
+
+        <div class="col-sm-4">
+          <h2>Tree</h2>
+          <div id="treeview-selectable" class=""></div>
+        </div>
+
         <div class="col-sm-4">
           <h2>Input</h2>
           <div class="form-group">
             <label for="input-select-node" class="sr-only">Search Tree:</label>
-            <input type="input" class="form-control" id="input-select-node" placeholder="Identify node..." value="Parent 1">
+            <input type="input" class="form-control" id="input-select-node" placeholder="Identify node..." value="Shakespeare">
           </div>
           <div class="checkbox">
             <label>
@@ -45,11 +50,7 @@
             <button type="button" class="btn btn-primary select-node" id="btn-toggle-selected">Toggle Node</button>
           </div>
         </div>
-  		-->
-        <div class="col-sm-4">
-          <h2>Tree</h2>
-          <div id="treeview-selectable" class=""></div>
-        </div>
+
         <div class="col-sm-4">
           <h2>Events</h2>
           <div id="selectable-output"></div>
@@ -83,7 +84,7 @@
 </div> <!-- Container -->
 
 
-<script src="{% static 'esearch/js/bootstrap-treeview.js' %}"></script>
+<script src="{% static 'esearch/js/common/bootstrap-treeview.js' %}"></script>
 <script src="{% static 'esearch/js/custom-treeview.js' %}"></script>
 <script src="{% static 'esearch/js/csrf.js' %}"></script>
   </body>
