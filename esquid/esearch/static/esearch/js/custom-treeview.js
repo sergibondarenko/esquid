@@ -30,12 +30,12 @@ var initSelectableTree = function() {
       $('#selectable-output').append('<p>' + node.text + ' was selected</p>');
       //$('#selectable-output').prepend('<p>' + node.text + ' was selected</p>');
 	  //console.log(node.text);
-	  //sendVarsToBackend(node.text);
+	  sendVarsToBackend(node.text);
     },
     onNodeUnselected: function (event, node) {
       $('#selectable-output').append('<p>' + node.text + ' was unselected</p>');
-      //$('#selectable-output').prepend('<p>' + node.text + ' was unselected</p>');
-	  //console.log(node.text);
+      ////$('#selectable-output').prepend('<p>' + node.text + ' was unselected</p>');
+	  ////console.log(node.text);
     }
   });
 };
@@ -82,15 +82,15 @@ $('#input-select-node').on('keyup', function (e) {
 });
 
 $('#btn-select-node.select-node').on('click', function (e) {
-  $selectableTree.treeview('selectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+  //$selectableTree.treeview('selectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
 });
 
 $('#btn-unselect-node.select-node').on('click', function (e) {
-  $selectableTree.treeview('unselectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+  //$selectableTree.treeview('unselectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
 });
 
 $('#btn-toggle-selected.select-node').on('click', function (e) {
-  $selectableTree.treeview('toggleNodeSelected', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+  //$selectableTree.treeview('toggleNodeSelected', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
 });
 
 // Clear query field
