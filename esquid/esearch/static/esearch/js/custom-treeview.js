@@ -1,7 +1,7 @@
 $(function() {
 
 // Send vars from menu to backend
-var sendVarsToBackend = function(vars){
+var sendVarsToBackend = function(vars, callback){
 	$.ajax({
 	  type: 'POST',
 	  url: 'postmenu/',
@@ -10,12 +10,11 @@ var sendVarsToBackend = function(vars){
 	  	msg: vars,
 	  },
 	  success: function(response){
-	  	$('#selectable-output').html(response);
+		callback(response);
 	  	console.log('Successful response from backend!');
-	  	console.log(response);
 	  },
 	  error: function(response){
-	  	$('#selectable-output').html('Error (ajax post): Unable to receive data from server.');
+	  	console.log('Error (ajax post): Unable to receive data from server.');
 	  }
 	}); // ajax post
 }
@@ -28,13 +27,12 @@ var initSelectableTree = function() {
     multiSelect: $('#chk-select-multi').is(':checked'),
     onNodeSelected: function(event, node) {
       $('#selectable-output').append('<p>' + node.text + ' was selected</p>');
-      //$('#selectable-output').prepend('<p>' + node.text + ' was selected</p>');
-	  //console.log(node.text);
-	  //sendVarsToBackend(node.text);
+	  sendVarsToBackend(node.text, function(){
+	  	console.log(node.text);
+	  });
     },
     onNodeUnselected: function (event, node) {
       $('#selectable-output').append('<p>' + node.text + ' was unselected</p>');
-      ////$('#selectable-output').prepend('<p>' + node.text + ' was unselected</p>');
 	  ////console.log(node.text);
     }
   });
@@ -102,9 +100,12 @@ $('#clear-query-field.select-node').on('click', function (e) {
 $('#input-free-search').keypress(function (e) {
 	if(e.which == 13){
 		e.preventDefault();
-		console.log('Free');
 		var search_query = $('#input-free-search').val();
-		sendVarsToBackend(search_query);
+
+		sendVarsToBackend(search_query, function(result){
+	  		$('#output-free-search').html(result);
+			console.log(result);
+		});
 	}
 });
 
