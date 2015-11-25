@@ -26,14 +26,15 @@ var initSelectableTree = function() {
 	data: menuItems,
     multiSelect: $('#chk-select-multi').is(':checked'),
     onNodeSelected: function(event, node) {
-      $('#selectable-output').append('<p>' + node.text + ' was selected</p>');
+      //$('#selectable-output').append('<p>' + node.text + ' was selected</p>');
+      //$('#selectable-output').append('( '+node.parents+ '.' +node.text+ '="hello")');
 	  sendVarsToBackend(node.text, function(){
 	  	console.log(node.text);
 	  });
     },
     onNodeUnselected: function (event, node) {
-      $('#selectable-output').append('<p>' + node.text + ' was unselected</p>');
-	  ////console.log(node.text);
+      //$('#selectable-output').append('<p>' + node.text + ' was unselected</p>');
+	  console.log(node.text);
     }
   });
 };
