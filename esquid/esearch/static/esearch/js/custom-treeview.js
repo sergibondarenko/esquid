@@ -1,45 +1,21 @@
 $(function() {
 
-var availableTags = [
-		      "ActionScript",
-      "AppleScript",
-      "Asp",
-      "BASIC",
-      "C",
-      "C++",
-      "Clojure",
-      "COBOL",
-      "ColdFusion",
-      "Erlang",
-      "Fortran",
-      "Groovy",
-      "Haskell",
-      "Java",
-      "JavaScript",
-      "Lisp",
-      "Perl",
-      "PHP",
-	        "Python",
-			      "Ruby",
-				        "Scala",
-						      "Scheme"
-										  ];
-
 // Send vars from menu to backend
-var sendVarsToBackend = function(vars, url, callback){
+var sendVarsToBackend = function(vars, datatype, url, callback){
 	$.ajax({
 	  type: 'POST',
+	  dataType: datatype,
 	  url: url,
 	  //url: 'postmenu/',
 	  data: {
 	  	//msg: 'Hello my friend!',
 	  	msg: vars,
 	  },
-	  success: function(response){
-		callback(response);
+	  success: function(data){
+		callback(data);
 	  	console.log('Successful response from backend!');
 	  },
-	  error: function(response){
+	  error: function(data){
 	  	console.log('Error (ajax post): Unable to receive data from server.');
 	  }
 	}); // ajax post
@@ -47,25 +23,8 @@ var sendVarsToBackend = function(vars, url, callback){
 
 $('#input-field-search').autocomplete({
 	source: function(request, response){
-		$.ajax({
-	  		type: 'POST',
-			url: 'livesearch/',
-			dataType: "json",
-			data: {
-				msg: request.term
-			},
-			success: function(data){
-				response(data);
-				console.log('Success');
-				console.log(request.term);
-				console.log(data);
-			},
-			error: function(data){
-				console.log('Error');
-			} 
-		});
+		sendVarsToBackend(request.term, 'json', 'livesearch/', response)
 	},
-	//source: availableTags, 
 	delay: 2000,
 	autoFocus: true,
 	minLength: 1
@@ -85,40 +44,7 @@ var initSelectableTree = function() {
 	  //	console.log(node.text);
 	  //});
 	  //console.log(availableTags);
-	  
 
-	  $('#input-field-search').autocomplete({
-	    //source: 'livesearch/',
-	  	//minLength: 2,
-	  	//maxLength: 4
-	  	//source: availableTags
-	  	source: function(request, response){
-	    	$.ajax({
-	    	  type: 'POST',
-	    	  url: 'livesearch/',
-	    	  //url: 'postmenu/',
-	    	  data: {
-	    	  	//msg: 'Hello my friend!',
-	    	  	msg: request.term,
-	    	  },
-	    	  success: function(data){
-	    		//data = data.split(';');  // Split received string into array
-	    		response(data);
-	    	  	console.log('Successful response from backend!');
-	    	  	console.log(data);
-	    	  },
-	    	  error: function(data){
-	    	  	console.log('Error (ajax post): Unable to receive data from server.');
-	    	  },
-	    		open: function() {
-	    			$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
-	    		},
-	    	    close: function() {
-	    			$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
-	    		}
-	    	}); // ajax post
-	    }
-	  }); // jQuery autocomplete
 
     },
     onNodeUnselected: function (event, node) {
@@ -192,7 +118,7 @@ $('#input-free-search').keypress(function (e) {
 		e.preventDefault();
 		var search_query = $('#input-free-search').val();
 
-		sendVarsToBackend(search_query, 'postmenu/', function(result){
+		sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
 	  		$('#output-free-search').html(result);
 			console.log(result);
 		});
