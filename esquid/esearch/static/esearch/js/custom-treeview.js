@@ -1,10 +1,36 @@
 $(function() {
 
+var availableTags = [
+		      "ActionScript",
+      "AppleScript",
+      "Asp",
+      "BASIC",
+      "C",
+      "C++",
+      "Clojure",
+      "COBOL",
+      "ColdFusion",
+      "Erlang",
+      "Fortran",
+      "Groovy",
+      "Haskell",
+      "Java",
+      "JavaScript",
+      "Lisp",
+      "Perl",
+      "PHP",
+	        "Python",
+			      "Ruby",
+				        "Scala",
+						      "Scheme"
+										  ];
+
 // Send vars from menu to backend
-var sendVarsToBackend = function(vars, callback){
+var sendVarsToBackend = function(vars, url, callback){
 	$.ajax({
 	  type: 'POST',
-	  url: 'postmenu/',
+	  url: url,
+	  //url: 'postmenu/',
 	  data: {
 	  	//msg: 'Hello my friend!',
 	  	msg: vars,
@@ -19,6 +45,32 @@ var sendVarsToBackend = function(vars, callback){
 	}); // ajax post
 }
 
+$('#input-field-search').autocomplete({
+	source: function(request, response){
+		$.ajax({
+	  		type: 'POST',
+			url: 'livesearch/',
+			dataType: "json",
+			data: {
+				msg: request.term
+			},
+			success: function(data){
+				response(data);
+				console.log('Success');
+				console.log(request.term);
+				console.log(data);
+			},
+			error: function(data){
+				console.log('Error');
+			} 
+		});
+	},
+	//source: availableTags, 
+	delay: 2000,
+	autoFocus: true,
+	minLength: 1
+});
+
 // Init menu
 var initSelectableTree = function() {
   return $('#treeview-selectable').treeview({
@@ -27,10 +79,47 @@ var initSelectableTree = function() {
     multiSelect: $('#chk-select-multi').is(':checked'),
     onNodeSelected: function(event, node) {
       //$('#selectable-output').append('<p>' + node.text + ' was selected</p>');
-      //$('#selectable-output').append('( '+node.parents+ '.' +node.text+ '="hello")');
-	  sendVarsToBackend(node.text, function(){
-	  	console.log(node.text);
-	  });
+	  //var search_query = $('#input-field-search').val();
+	  //$('#selectable-output').append('( '+node.parents+ '.' +node.text+ '="' +search_query+ '")');
+	  //sendVarsToBackend(node.text, 'postmenu/', function(){
+	  //	console.log(node.text);
+	  //});
+	  //console.log(availableTags);
+	  
+
+	  $('#input-field-search').autocomplete({
+	    //source: 'livesearch/',
+	  	//minLength: 2,
+	  	//maxLength: 4
+	  	//source: availableTags
+	  	source: function(request, response){
+	    	$.ajax({
+	    	  type: 'POST',
+	    	  url: 'livesearch/',
+	    	  //url: 'postmenu/',
+	    	  data: {
+	    	  	//msg: 'Hello my friend!',
+	    	  	msg: request.term,
+	    	  },
+	    	  success: function(data){
+	    		//data = data.split(';');  // Split received string into array
+	    		response(data);
+	    	  	console.log('Successful response from backend!');
+	    	  	console.log(data);
+	    	  },
+	    	  error: function(data){
+	    	  	console.log('Error (ajax post): Unable to receive data from server.');
+	    	  },
+	    		open: function() {
+	    			$( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+	    		},
+	    	    close: function() {
+	    			$( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+	    		}
+	    	}); // ajax post
+	    }
+	  }); // jQuery autocomplete
+
     },
     onNodeUnselected: function (event, node) {
       //$('#selectable-output').append('<p>' + node.text + ' was unselected</p>');
@@ -103,7 +192,7 @@ $('#input-free-search').keypress(function (e) {
 		e.preventDefault();
 		var search_query = $('#input-free-search').val();
 
-		sendVarsToBackend(search_query, function(result){
+		sendVarsToBackend(search_query, 'postmenu/', function(result){
 	  		$('#output-free-search').html(result);
 			console.log(result);
 		});

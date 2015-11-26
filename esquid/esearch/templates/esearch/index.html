@@ -1,7 +1,17 @@
 {% load staticfiles %}
 <!--<link rel="stylesheet" href="{% static 'esearch/css/bootstrap.min.css' %}" /> Download Bootstrap icons to use.-->
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-1.10.0.custom.css' %}" />
+<link rel="stylesheet" href="{% static 'esearch/css/jquery.ui.1.10.0.ie.css' %}" />
+<!--
+<link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-autocomplete.css' %}" />
+-->
+
 <script src="{% static 'esearch/js/common/jquery.min.js' %}"></script>
+<script src="{% static 'esearch/js/common/jquery-ui-1.9.2.custom.min.js' %}"></script>
+<!--
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+-->
 <script src="{% static 'esearch/js/common/bootstrap.min.js' %}"></script>
 {% load get_from_dict %}
 {% load get_from_source %}
@@ -25,7 +35,7 @@
           </div>
           <div class="checkbox">
             <label>
-              <input type="checkbox" class="checkbox" id="chk-select-multi" value="false" checked>
+              <input type="checkbox" class="checkbox" id="chk-select-multi" value="false">
               Multi Select
             </label>
           </div>
