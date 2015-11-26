@@ -14,6 +14,7 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 	  success: function(data){
 		callback(data);
 	  	console.log('Successful response from backend!');
+		console.log(data);
 	  },
 	  error: function(data){
 	  	console.log('Error (ajax post): Unable to receive data from server.');
@@ -21,14 +22,6 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 	}); // ajax post
 }
 
-$('#input-field-search').autocomplete({
-	source: function(request, response){
-		sendVarsToBackend(request.term, 'json', 'livesearch/', response)
-	},
-	delay: 2000,
-	autoFocus: true,
-	minLength: 1
-});
 
 // Init menu
 var initSelectableTree = function() {
@@ -37,14 +30,30 @@ var initSelectableTree = function() {
 	data: menuItems,
     multiSelect: $('#chk-select-multi').is(':checked'),
     onNodeSelected: function(event, node) {
-      //$('#selectable-output').append('<p>' + node.text + ' was selected</p>');
-	  //var search_query = $('#input-field-search').val();
-	  //$('#selectable-output').append('( '+node.parents+ '.' +node.text+ '="' +search_query+ '")');
 	  //sendVarsToBackend(node.text, 'postmenu/', function(){
 	  //	console.log(node.text);
 	  //});
-	  //console.log(availableTags);
+	
+		function log_query(message){
+			//$('<div>').text(message).appendTo('#selectable-output');
+			//$('#selectable-output').scrollTop(0);
+			var query_log = $('#selectable-output').text();
+			query_log += message;
+			$('#selectable-output').empty();
+			$('#selectable-output').append(query_log);
+		}
 
+		$('#input-field-search').autocomplete({
+			source: function(request, response){
+				sendVarsToBackend(request.term, 'json', 'livesearch/', response)
+			},
+			select: function(event, ui){
+				log_query("(" + node.parents + "." + node.text + "=" + ui.item.label + ")");
+			},
+			delay: 1000,
+			autoFocus: true,
+			minLength: 1
+		});
 
     },
     onNodeUnselected: function (event, node) {
@@ -89,28 +98,64 @@ $('#chk-select-multi:checkbox').on('change', function () {
   selectableNodes = findSelectableNodes();          
 });
 
-// Select/unselect/toggle nodes
-$('#input-select-node').on('keyup', function (e) {
-  selectableNodes = findSelectableNodes();
-  $('.select-node').prop('disabled', !(selectableNodes.length >= 1));
-});
-
-$('#btn-select-node.select-node').on('click', function (e) {
-  //$selectableTree.treeview('selectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
-});
-
-$('#btn-unselect-node.select-node').on('click', function (e) {
-  //$selectableTree.treeview('unselectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
-});
-
-$('#btn-toggle-selected.select-node').on('click', function (e) {
-  //$selectableTree.treeview('toggleNodeSelected', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
-});
+//// Select/unselect/toggle nodes
+//$('#input-select-node').on('keyup', function (e) {
+//  selectableNodes = findSelectableNodes();
+//  $('.select-node').prop('disabled', !(selectableNodes.length >= 1));
+//});
+//
+//$('#btn-select-node.select-node').on('click', function (e) {
+//  $selectableTree.treeview('selectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+//});
+//
+//$('#btn-unselect-node.select-node').on('click', function (e) {
+//  $selectableTree.treeview('unselectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+//});
+//
+//$('#btn-toggle-selected.select-node').on('click', function (e) {
+//  $selectableTree.treeview('toggleNodeSelected', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+//});
 
 // Clear query field
-$('#clear-query-field.select-node').on('click', function (e) {
+$('#btn-clear-log-query-field.select-node').on('click', function (e) {
 	$('#selectable-output').empty();
 });
+
+// AND
+$('#btn-and.select-node').on('click', function (e) {
+	//$('<div>').text(' AND ').appendTo('#selectable-output');
+	var query_log = $('#selectable-output').text();
+	query_log += ' AND ';
+	$('#selectable-output').empty();
+	$('#selectable-output').append(query_log);
+});
+
+// OR
+$('#btn-or.select-node').on('click', function (e) {
+	var query_log = $('#selectable-output').text();
+	query_log += ' OR ';
+	$('#selectable-output').empty();
+	$('#selectable-output').append(query_log);
+});
+
+// NOT
+$('#btn-not.select-node').on('click', function (e) {
+	var query_log = $('#selectable-output').text();
+	query_log += ' NOT ';
+	$('#selectable-output').empty();
+	$('#selectable-output').append(query_log);
+});
+
+// SEARCH
+$('#btn-search.select-node').on('click', function (e) {
+	var search_query = $('#selectable-output').text();
+
+	sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
+		$('#output-free-search').html(result);
+		console.log(result);
+	});
+});
+
 
 // Free search in Elasticsearch
 $('#input-free-search').keypress(function (e) {
