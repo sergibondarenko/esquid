@@ -173,6 +173,35 @@ $('#input-field-search').keypress(function (e) {
 	}
 });
 
+// Get first Elasticsearch records from server and display them on index.html
+sendVarsToBackend('', 'json', 'search_all/', function(result){
+	//console.log(result.hits.hits[0]._source.speaker);	
+
+	// Build HTML table to display records
+	var tr = $('<tr>').append(
+			$('<th>').text('Line Number'),
+			$('<th>').text('Speech Number'),
+			$('<th>').text('Play Name'),
+			$('<th>').text('Text Entry'),
+			$('<th>').text('Line Id'),
+			$('<th>').text('Speaker')
+	);
+	$('#records_table').append(tr);
+
+	for(var i = 0; i < result.hits.hits.length; i++){
+		var hit = result.hits.hits[i];
+		tr = $('<tr>').append(
+			$('<td>').text(hit._source.line_number),
+			$('<td>').text(hit._source.speech_number),
+			$('<td>').text(hit._source.play_name),
+			$('<td>').text(hit._source.text_entry),
+			$('<td>').text(hit._source.line_id),
+			$('<td>').text(hit._source.speaker)
+		);
+		$('#records_table').append(tr);
+	}
+});
+
 //// Old search bar
 //// Press "Enter" key to search. Free search in Elasticsearch
 //$('#input-free-search').keypress(function (e) {

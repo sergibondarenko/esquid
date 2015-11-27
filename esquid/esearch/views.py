@@ -13,14 +13,26 @@ from .models import Esearch
 
 # Create Esearch obj of class Esearch
 Esearch = Esearch()
+Esearch.init('localhost', '9200');
 
-# Function renders index.html
+# Test function. Render index.html
 def index(request):
-        Esearch.init('localhost', '9200');
-	result = Esearch.search_all('shakespeare')
+    result = Esearch.search_all('shakespeare')
+    
+    context = {'results_list': result}
+    return render(request, 'esearch/index.html', context)
 
-	context = {'results_list': result}
-	return render(request, 'esearch/index.html', context)
+
+# Test function. Return all Elasticsearch results to frontend.
+def search_all(request):
+    if request.is_ajax():
+        result = Esearch.search_all('shakespeare')
+        data = simplejson.dumps(result)
+    else:
+        data = 'Server: Fail to receive ajax request'
+
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)
 
 
 # Test function. Return calls to frontend.
