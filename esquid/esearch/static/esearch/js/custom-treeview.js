@@ -121,27 +121,27 @@ $('#btn-clear-log-query-field.select-node').on('click', function (e) {
 	$('#selectable-output').empty();
 });
 
-// AND
-$('#btn-and.select-node').on('click', function (e) {
+// AND - MUST
+$('#btn-must.select-node').on('click', function (e) {
 	//$('<div>').text(' AND ').appendTo('#selectable-output');
 	var query_log = $('#selectable-output').text();
-	query_log += ' AND ';
+	query_log += ' MUST ';
 	$('#selectable-output').empty();
 	$('#selectable-output').append(query_log);
 });
 
-// OR
-$('#btn-or.select-node').on('click', function (e) {
+// OR - SHOULD
+$('#btn-should.select-node').on('click', function (e) {
 	var query_log = $('#selectable-output').text();
-	query_log += ' OR ';
+	query_log += ' SHOULD ';
 	$('#selectable-output').empty();
 	$('#selectable-output').append(query_log);
 });
 
-// NOT
-$('#btn-not.select-node').on('click', function (e) {
+// NOT - MUST NOT
+$('#btn-mustnot.select-node').on('click', function (e) {
 	var query_log = $('#selectable-output').text();
-	query_log += ' NOT ';
+	query_log += ' MUST_NOT ';
 	$('#selectable-output').empty();
 	$('#selectable-output').append(query_log);
 });
