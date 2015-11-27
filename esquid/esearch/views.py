@@ -13,7 +13,7 @@ from .models import Esearch
 
 # Create Esearch obj of class Esearch
 Esearch = Esearch()
-Esearch.init('localhost', '9200');
+Esearch.init('localhost', '9200')
 
 # Test function. Render index.html
 def index(request):

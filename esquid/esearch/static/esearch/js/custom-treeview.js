@@ -14,7 +14,7 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 	  success: function(data){
 		callback(data);
 	  	console.log('Successful response from backend!');
-		console.log(data);
+		//console.log(data);
 	  },
 	  error: function(data){
 	  	console.log('Error (ajax post): Unable to receive data from server.');
@@ -180,6 +180,7 @@ $('#btn-search.select-node').on('click', function (e) {
 
 	sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
 		$('#output-free-search').html(result);
+		console.log(result);
 	});
 });
 
