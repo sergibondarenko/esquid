@@ -45,7 +45,6 @@ var buildRecordsTable = function(json_objs, table_name){
 		// Loop through all elements of the _source dictionary
 		for(var i in hit._source){
 			var src_arr = hit._source
-			//tr.append('<td>'+src_arr[i]+' <sup>'+i+'</sup></td>');	// Create a cell and append it to the row created above
 			tr.append('<td>' + src_arr[i] + '</td>');	// Create a cell and append it to the row created above
 		}
 		$(table_name).append(tr);	// Append the row to the table
@@ -59,9 +58,6 @@ var initSelectableTree = function() {
 	data: menuItems,
     multiSelect: $('#chk-select-multi').is(':checked'),
     onNodeSelected: function(event, node) {
-	  //sendVarsToBackend(node.text, 'postmenu/', function(){
-	  //	console.log(node.text);
-	  //});
 	
 	    // Log query
 		function log_query(message){
