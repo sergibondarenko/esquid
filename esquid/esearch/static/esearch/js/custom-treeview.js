@@ -34,6 +34,7 @@ var initSelectableTree = function() {
 	  //	console.log(node.text);
 	  //});
 	
+	    // Log query
 		function log_query(message){
 			//$('<div>').text(message).appendTo('#selectable-output');
 			//$('#selectable-output').scrollTop(0);
@@ -43,6 +44,7 @@ var initSelectableTree = function() {
 			$('#selectable-output').append(query_log);
 		}
 
+		// Autocomplete search field
 		$('#input-field-search').autocomplete({
 			source: function(request, response){
 				sendVarsToBackend(request.term, 'json', 'livesearch/', response)
@@ -158,11 +160,11 @@ $('#btn-search.select-node').on('click', function (e) {
 });
 
 
-// Free search in Elasticsearch
-$('#input-free-search').keypress(function (e) {
+// Press "Enter" key to search. Free search in Elasticsearch
+$('#input-field-search').keypress(function (e) {
 	if(e.which == 13){
 		e.preventDefault();
-		var search_query = $('#input-free-search').val();
+		var search_query = $('#input-field-search').val();
 
 		sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
 	  		$('#output-free-search').html(result);
@@ -170,5 +172,19 @@ $('#input-free-search').keypress(function (e) {
 		});
 	}
 });
+
+//// Old search bar
+//// Press "Enter" key to search. Free search in Elasticsearch
+//$('#input-free-search').keypress(function (e) {
+//	if(e.which == 13){
+//		e.preventDefault();
+//		var search_query = $('#input-free-search').val();
+//
+//		sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
+//	  		$('#output-free-search').html(result);
+//			console.log(result);
+//		});
+//	}
+//});
 
 });

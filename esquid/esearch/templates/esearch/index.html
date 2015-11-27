@@ -31,9 +31,10 @@
           <h2>Tree</h2>
           <div class="form-group">
             <label for="input-select-node" class="sr-only">Search Tree:</label>
-            <input type="input" class="form-control" id="input-select-node" placeholder="Identify menu node..." value="Shakespeare">
+            <input type="input" class="form-control" id="input-select-node" placeholder="Search for a menu node..." value="Shakespeare">
           </div>
           <div class="checkbox">
+			<!--
             <label>
               <input type="checkbox" class="checkbox" id="chk-select-multi" value="false">
               Multi Select
@@ -42,6 +43,7 @@
               <input type="checkbox" class="checkbox" id="chk-select-freesearch" value="false">
               Free Search
             </label>
+			-->
           </div>
 		  <!--
           <div class="checkbox">
@@ -68,7 +70,7 @@
           <h2>Search</h2>
           <div class="form-group">
             <label for="input-select-node" class="sr-only">Search Tree:</label>
-            <input type="input" class="form-control" id="input-field-search" placeholder="Click on the menu item to search..." value="">
+            <input type="input" class="form-control" id="input-field-search" placeholder="First click on a menu node, then type here to search..." value="">
           </div>
           <div class="form-group">
             <button type="button" class="btn btn-danger select-node" id="btn-clear-log-query-field">CLEAR</button>
@@ -78,22 +80,29 @@
             <button type="button" class="btn btn-primary select-node" id="btn-mustnot">MUST NOT</button>
           </div>
 
+		  	<!--
         	<div class="events">
         	  <div id="selectable-output"></div>
         	</div>
+			-->
+			<div class="log_query">
+				<textarea class="form-control" id="selectable-output" rows="5"></textarea>
+			</div>
 
         </div>
 
       </div>
 
 	  <br>
+	  <!--
 	  <div class="row">
         <h2>Free Search</h2>
         <div class="form-group">
           <label for="input-select-node" class="sr-only">Search Tree:</label>
           <input type="input" class="form-control" id="input-free-search" placeholder="Type here to search..." value="">
         </div>
-	  </div> <!--row-->
+	  </div> 
+		-->
 	  <br>
 	  <div class="row">
         <div class="events">
@@ -103,7 +112,7 @@
 	  <br>
 
       <div class="row">
-	  <h2>Test Elasticsearch raw output</h2>
+			  <!--<h2>Display</h2>-->
 
 		{% if results_list %}
 			<ul>
