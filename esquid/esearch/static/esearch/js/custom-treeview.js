@@ -1,5 +1,6 @@
 $(function() {
 
+
 // Send vars from menu to backend
 var sendVarsToBackend = function(vars, datatype, url, callback){
 	$.ajax({
@@ -63,10 +64,10 @@ var initSelectableTree = function() {
 		function log_query(message){
 			//$('<div>').text(message).appendTo('#selectable-output');
 			//$('#selectable-output').scrollTop(0);
-			var query_log = $('#selectable-output').text();
+			var query_log = $('#selectable-output').val();
 			query_log += message;
-			$('#selectable-output').empty();
-			$('#selectable-output').append(query_log);
+			$('#selectable-output').val('');
+			$('#selectable-output').val(query_log);
 		}
 
 		// Autocomplete search field
@@ -115,15 +116,15 @@ var $selectableTree = initSelectableTree();
 
 // Form functionality to search for nodes in menu
 var findSelectableNodes = function() {
-  return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: false } ]);
+	return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: false } ]);
 };
 
 var selectableNodes = findSelectableNodes();
 // Multiselect functionality of menu
 $('#chk-select-multi:checkbox').on('change', function () {
-  console.log('multi-select change');
-  $selectableTree = initSelectableTree();
-  selectableNodes = findSelectableNodes();          
+	console.log('multi-select change');
+	$selectableTree = initSelectableTree();
+	selectableNodes = findSelectableNodes();          
 });
 
 //// Select/unselect/toggle nodes. Test functionality.
@@ -146,32 +147,32 @@ $('#chk-select-multi:checkbox').on('change', function () {
 
 // Clear query field
 $('#btn-clear-log-query-field.select-node').on('click', function (e) {
-	$('#selectable-output').empty();
+	$('#selectable-output').val('');
 });
 
 // AND - MUST
 $('#btn-must.select-node').on('click', function (e) {
 	//$('<div>').text(' AND ').appendTo('#selectable-output');
-	var query_log = $('#selectable-output').text();
+	var query_log = $('#selectable-output').val();
 	query_log += ' MUST ';
-	$('#selectable-output').empty();
-	$('#selectable-output').append(query_log);
+	$('#selectable-output').val('');
+	$('#selectable-output').val(query_log);
 });
 
 // OR - SHOULD
 $('#btn-should.select-node').on('click', function (e) {
-	var query_log = $('#selectable-output').text();
+	var query_log = $('#selectable-output').val();
 	query_log += ' SHOULD ';
-	$('#selectable-output').empty();
-	$('#selectable-output').append(query_log);
+	$('#selectable-output').val('');
+	$('#selectable-output').val(query_log);
 });
 
 // NOT - MUST NOT
 $('#btn-mustnot.select-node').on('click', function (e) {
-	var query_log = $('#selectable-output').text();
+	var query_log = $('#selectable-output').val();
 	query_log += ' MUST_NOT ';
-	$('#selectable-output').empty();
-	$('#selectable-output').append(query_log);
+	$('#selectable-output').val('');
+	$('#selectable-output').val(query_log);
 });
 
 // SEARCH button. Sends search query to server. 
@@ -190,11 +191,19 @@ $('#input-field-search').keypress(function (e) {
 	if(e.which == 13){
 		e.preventDefault();
 		var search_query = $('#input-field-search').val();
+		var free_search_check = $('#chk-select-freesearch').is(':checked');
 
-		sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
-	  		$('#output-free-search').html(result);
-			console.log(result);
-		});
+		// Verify if Free Search is checked
+		if(free_search_check){
+			sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
+	  			$('#output-free-search').html(result);
+				console.log(result);
+			});
+		} else {
+			var choice1 = 'Select a menu node to search it.';
+		   	var choice2 = 'Or check "Free Search" to search in free mode.';	
+			$('#output-free-search').html('<p>'+ choice1 +' '+ choice2 +'</p>');	
+		}
 	}
 });
 
@@ -203,18 +212,5 @@ sendVarsToBackend('', 'json', 'search_all/', function(result){
 	buildRecordsTable(result, '#records_table:last');
 });
 
-//// Old search bar
-//// Press "Enter" key to search. Free search in Elasticsearch
-//$('#input-free-search').keypress(function (e) {
-//	if(e.which == 13){
-//		e.preventDefault();
-//		var search_query = $('#input-free-search').val();
-//
-//		sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
-//	  		$('#output-free-search').html(result);
-//			console.log(result);
-//		});
-//	}
-//});
 
 });
