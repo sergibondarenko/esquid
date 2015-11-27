@@ -22,18 +22,32 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 	}); // ajax post
 }
 
+// Table builder
 var buildRecordsTable = function(json_objs, table_name){
+
+	// Find _source dictionary keys
+	var hit = json_objs.hits.hits[0];
+	var hr_num = Object.keys(hit._source).length; 
+	var hr_arr = Object.keys(hit._source); 
+
+	// Loop through _source keys array and append them to <th>
+	var tr = $('<tr>');
+	for(var i in hr_arr){
+		tr.append('<th>' + hr_arr[i] + '</th>');
+	}
+	$(table_name).append(tr);
+
 	// Loop through all received documents
 	$.each(json_objs.hits.hits, function(key, value){
-		var hit = value;
-		var tr = $('<tr>');	// Create a row
+		hit = value;
+		tr = $('<tr>');	// Create a row
 
 		// Loop through all elements of the _source dictionary
 		for(var i in hit._source){
 			var src_arr = hit._source
-			tr.append('<td>'+src_arr[i]+'</td>');	// Create a cell and append it to the row created above
+			//tr.append('<td>'+src_arr[i]+' <sup>'+i+'</sup></td>');	// Create a cell and append it to the row created above
+			tr.append('<td>' + src_arr[i] + '</td>');	// Create a cell and append it to the row created above
 		}
-		//$('#records_table:last').append(tr);	// Append the row to the table
 		$(table_name).append(tr);	// Append the row to the table
 	});
 }
