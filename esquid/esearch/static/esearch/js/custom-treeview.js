@@ -22,6 +22,21 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 	}); // ajax post
 }
 
+var buildRecordsTable = function(json_objs, table_name){
+	// Loop through all received documents
+	$.each(json_objs.hits.hits, function(key, value){
+		var hit = value;
+		var tr = $('<tr>');	// Create a row
+
+		// Loop through all elements of the _source dictionary
+		for(var i in hit._source){
+			var src_arr = hit._source
+			tr.append('<td>'+src_arr[i]+'</td>');	// Create a cell and append it to the row created above
+		}
+		//$('#records_table:last').append(tr);	// Append the row to the table
+		$(table_name).append(tr);	// Append the row to the table
+	});
+}
 
 // Init menu, turn on menu node event listening
 var initSelectableTree = function() {
@@ -151,11 +166,10 @@ $('#btn-mustnot.select-node').on('click', function (e) {
 
 // SEARCH button. Sends search query to server. 
 $('#btn-search.select-node').on('click', function (e) {
-	var search_query = $('#selectable-output').text();
+	var search_query = $('#selectable-output').val();
 
 	sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
 		$('#output-free-search').html(result);
-		console.log(result);
 	});
 });
 
@@ -175,31 +189,7 @@ $('#input-field-search').keypress(function (e) {
 
 // Get first Elasticsearch records from server and display them on index.html
 sendVarsToBackend('', 'json', 'search_all/', function(result){
-	//console.log(result.hits.hits[0]._source.speaker);	
-
-	// Build HTML table to display records
-	var tr = $('<tr>').append(
-			$('<th>').text('Line Number'),
-			$('<th>').text('Speech Number'),
-			$('<th>').text('Play Name'),
-			$('<th>').text('Text Entry'),
-			$('<th>').text('Line Id'),
-			$('<th>').text('Speaker')
-	);
-	$('#records_table').append(tr);
-
-	for(var i = 0; i < result.hits.hits.length; i++){
-		var hit = result.hits.hits[i];
-		tr = $('<tr>').append(
-			$('<td>').text(hit._source.line_number),
-			$('<td>').text(hit._source.speech_number),
-			$('<td>').text(hit._source.play_name),
-			$('<td>').text(hit._source.text_entry),
-			$('<td>').text(hit._source.line_id),
-			$('<td>').text(hit._source.speaker)
-		);
-		$('#records_table').append(tr);
-	}
+	buildRecordsTable(result, '#records_table:last');
 });
 
 //// Old search bar
