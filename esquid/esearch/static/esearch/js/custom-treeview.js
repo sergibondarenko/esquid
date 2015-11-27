@@ -23,7 +23,7 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 }
 
 
-// Init menu
+// Init menu, turn on menu node event listening
 var initSelectableTree = function() {
   return $('#treeview-selectable').treeview({
   	color: "#428bca",
@@ -86,19 +86,20 @@ buildMenu();
 
 var $selectableTree = initSelectableTree();
 
-// Form functionality
+// Form functionality to search for nodes in menu
 var findSelectableNodes = function() {
   return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: false } ]);
 };
-var selectableNodes = findSelectableNodes();
 
+var selectableNodes = findSelectableNodes();
+// Multiselect functionality of menu
 $('#chk-select-multi:checkbox').on('change', function () {
   console.log('multi-select change');
   $selectableTree = initSelectableTree();
   selectableNodes = findSelectableNodes();          
 });
 
-//// Select/unselect/toggle nodes
+//// Select/unselect/toggle nodes. Test functionality.
 //$('#input-select-node').on('keyup', function (e) {
 //  selectableNodes = findSelectableNodes();
 //  $('.select-node').prop('disabled', !(selectableNodes.length >= 1));
@@ -146,7 +147,7 @@ $('#btn-mustnot.select-node').on('click', function (e) {
 	$('#selectable-output').append(query_log);
 });
 
-// SEARCH
+// SEARCH button. Sends search query to server. 
 $('#btn-search.select-node').on('click', function (e) {
 	var search_query = $('#selectable-output').text();
 
