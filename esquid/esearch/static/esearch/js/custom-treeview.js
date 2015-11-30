@@ -1,4 +1,4 @@
-$(function() {
+$(function() {  // main function, runs at start
 
 
 // Send vars from menu to backend
@@ -7,9 +7,7 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 	  type: 'POST',
 	  dataType: datatype,
 	  url: url,
-	  //url: 'postmenu/',
 	  data: {
-	  	//msg: 'Hello my friend!',
 	  	msg: vars,
 	  },
 	  success: function(data){
@@ -62,8 +60,6 @@ var initSelectableTree = function() {
 	
 	    // Log query
 		function log_query(message){
-			//$('<div>').text(message).appendTo('#selectable-output');
-			//$('#selectable-output').scrollTop(0);
 			var query_log = $('#selectable-output').val();
 			query_log += message;
 			$('#selectable-output').val('');
@@ -127,24 +123,6 @@ $('#chk-select-multi:checkbox').on('change', function () {
 	selectableNodes = findSelectableNodes();          
 });
 
-//// Select/unselect/toggle nodes. Test functionality.
-//$('#input-select-node').on('keyup', function (e) {
-//  selectableNodes = findSelectableNodes();
-//  $('.select-node').prop('disabled', !(selectableNodes.length >= 1));
-//});
-//
-//$('#btn-select-node.select-node').on('click', function (e) {
-//  $selectableTree.treeview('selectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
-//});
-//
-//$('#btn-unselect-node.select-node').on('click', function (e) {
-//  $selectableTree.treeview('unselectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
-//});
-//
-//$('#btn-toggle-selected.select-node').on('click', function (e) {
-//  $selectableTree.treeview('toggleNodeSelected', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
-//});
-
 // Clear query field
 $('#btn-clear-log-query-field.select-node').on('click', function (e) {
 	$('#selectable-output').val('');
@@ -152,7 +130,6 @@ $('#btn-clear-log-query-field.select-node').on('click', function (e) {
 
 // AND - MUST
 $('#btn-must.select-node').on('click', function (e) {
-	//$('<div>').text(' AND ').appendTo('#selectable-output');
 	var query_log = $('#selectable-output').val();
 	query_log += ' MUST ';
 	$('#selectable-output').val('');
@@ -213,4 +190,4 @@ sendVarsToBackend('', 'json', 'search_all/', function(result){
 });
 
 
-});
+}); // End of main function
