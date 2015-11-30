@@ -79,6 +79,15 @@ def freesearch(request):
     else:
         data = 'Server: Fail to receive ajax request'
 
+# Test function. Return calls to frontend.
+def logicalsearch(request):
+    if request.is_ajax():
+        message = request.POST['msg']
+        result = Esearch.logicalSearch(message, 'shakespeare')
+        data = simplejson.dumps(result)
+    else:
+        data = 'Server: Fail to receive ajax request'
+
     mimetype = 'application/json'
     return HttpResponse(data, mimetype)
 

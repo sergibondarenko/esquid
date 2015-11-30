@@ -31,17 +31,16 @@ class Esearch(models.Model):
 
 
     def freeSearch(self, searchquery, index):
+        # Elasticsearch connection initialization
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
-
-        #q = ElasticQuery(es=Elasticsearch(),index='shakespeare',doc_type='')
+        # q = ElasticQuery(es=Elasticsearch(),index='shakespeare',doc_type='')
         q = ElasticQuery(es, index=index, doc_type='')
-
-        #searchquery = raw_input("Search: ")
         ElasticQuery.sort(q,"_score",order="desc")
         ElasticQuery.size(q,100)
         
+        # Check correct query syntax (query must have max 2 '\in' and max 1 '\filter')
         if searchquery.count("\in ") <= 2 and searchquery.count("\\filter ") <= 1:
-            # SELECT *** IN *** FILTER *** IN ***
+            # Code for query creation like "SELECT *** IN *** FILTER *** IN ***"
             if searchquery.count("\in ") == 2 and searchquery.find("\\filter ") != -1:
                 q.query(Query.bool(
                     must=[Query.query_string(
@@ -60,7 +59,7 @@ class Esearch(models.Model):
                     )]
                 ))
             
-            # SELECT *** IN *** FILTER ***
+            # Code for query creation like "SELECT *** IN *** FILTER ***"
             elif searchquery.count("\in ") == 1 and searchquery.find("\\filter ") != -1:
                 q.query(Query.bool(
                     must=[Query.query_string(
@@ -79,7 +78,7 @@ class Esearch(models.Model):
                     )]
                 ))
             
-            # SELECT *** IN ***
+            # Code for query creation like "SELECT *** IN ***"
             elif searchquery.count("\in ") == 1 and searchquery.find("\\filter ") == -1 and searchquery.find("\\filter") == -1:
                 print searchquery[:searchquery.find("\in")]
                 print searchquery[searchquery.find("\in") + 4:].replace(","," ").split()
@@ -91,7 +90,7 @@ class Esearch(models.Model):
                     searchquery[searchquery.find("\in") + 4:].replace(","," ").split(),default_operator='AND'
                 ))
     
-            # SELECT ***
+            # Code for query creation like "SELECT ***"
             elif searchquery.count("\in ") == 0 and searchquery.count("\in") == 0 and searchquery.find("\\filter ") == -1 and searchquery.find("\\filter") == -1:
                 q.query(Query.match(
                     "_all",(
@@ -108,11 +107,10 @@ class Esearch(models.Model):
         else:
             print "Query Error :( -> Rewrite your query!"
     
-        #print q.json()
         return q.get()
 
 
-    # Autoupdate
+    # Function that returns all elements that match our requirements in a single specific field
     def return_single_field_search(field,search):
         q = ElasticQuery(es=Elasticsearch(),index=all_indexes,doc_type='')
         q.aggregate(Aggregate.terms(search,field))
@@ -122,7 +120,7 @@ class Esearch(models.Model):
         print q.get()
     
 
-    # Filter output
+    # Function that returns index name, fields name or values
     def return_values(query,start,end):
         count = query.count("(")
         indexes = ""
@@ -134,7 +132,7 @@ class Esearch(models.Model):
         return indexes[:len(indexes) - 1]
     
 
-    # Filter output
+    # Function that remove all duplicates found in a string
     def remove_dupl(string):
         list_terms = []
         string = string.replace(","," ")
@@ -145,39 +143,45 @@ class Esearch(models.Model):
                 terms = terms + term + ","
         return terms
     
-
-    def return_elements(query,conditions,all_indexes):
+    # Function that splits the entire query into max three parts, each for MUST, SHOULD or MUST NOT condition
+    def return_elements(query,conditions):
         result = re.search('%' + conditions + '%.*?%', query).group()
         result = result[:len(result) - 2].replace('%' + conditions + '%',"")
         return result
 
 
     def logicalSearch(request, query):
+        # Create Esearch obj of class Esearch
+        Esearch = Esearch()
+        Esearch.init('localhost', '9200')
+
+        # Remove space on query string and add % as prefix and suffix 
         query = query.replace("MUST ","%MUST%").replace("SHOULD ","%SHOULD%").replace("MUST_NOT ","%MUST_NOT%") + " %"
         
+        # Populate class variables with values only if the relative condition is present on our query
         if query.find("%MUST%") != -1:
-            result = return_elements(query,"MUST",all_indexes)
-            must_fields = return_values(result,".","=")
+            result = Esearch.return_elements(query,"MUST")
+            must_fields = Esearch.return_values(result,".","=")
             must_fields = must_fields[:len(remove_dupl(must_fields)) - 1]
-            must_values = return_values(result,"=",")")
-        
+            must_values = Esearch.return_values(result,"=",")")
         if query.find("%SHOULD%") != -1:
-            result = return_elements(query,"SHOULD",all_indexes)
-            should_fields = return_values(result,".","=")
+            result = Esearch.return_elements(query,"SHOULD")
+            should_fields = Esearch.return_values(result,".","=")
             should_fields = should_fields[:len(remove_dupl(should_fields)) - 1]
-            should_values = return_values(result,"=",")")
-        
+            should_values = Esearch.return_values(result,"=",")")
         if query.find("%MUST_NOT%") != -1:
-            result = return_elements(query,"MUST_NOT",all_indexes)
-            mustnot_fields = return_values(result,".","=")
+            result = Esearch.return_elements(query,"MUST_NOT")
+            mustnot_fields = Esearch.return_values(result,".","=")
             mustnot_fields = mustnot_fields[:len(remove_dupl(mustnot_fields)) - 1]
-            mustnot_values = return_values(result,"=",")")
+            mustnot_values = Esearch.return_values(result,"=",")")
         
-        all_indexes = all_indexes + return_values(result,"(",".") + ','
-        q = ElasticQuery(es=Elasticsearch(),index=all_indexes,doc_type='')
+        # Elasticsearch connection initialization
+        all_indexes = all_indexes + Esearch.return_values(result,"(",".") + ','
+        q = ElasticQuery(es=Elasticsearch(),index=Esearch.remove_dupl(all_indexes),doc_type='')
         ElasticQuery.sort(q,"_score",order="desc")
         ElasticQuery.size(q,str(size))
         
+        # Code for query creation like "MUST (...) SHOULD (...) MUST_NOT(...)"
         if must_fields != "" and should_fields != "" and mustnot_fields != "":
             q.query(Query.bool(
                         must=[Query.query_string(
@@ -203,6 +207,7 @@ class Esearch(models.Model):
                         )]
                     ))
         
+        # Code for query creation like "MUST (...) SHOULD (...)"
         elif must_fields != "" and should_fields != "" and mustnot_fields == "":
             q.query(Query.bool(
                         must=[Query.query_string(
@@ -221,6 +226,7 @@ class Esearch(models.Model):
                         )]
                     ))
         
+        # Code for query creation like "SHOULD (...) MUST_NOT(...)"
         elif must_fields == "" and should_fields != "" and mustnot_fields != "":
             q.query(Query.bool(
                         should=[Query.query_string(
@@ -239,6 +245,7 @@ class Esearch(models.Model):
                         )]
                     ))
         
+        # Code for query creation like "MUST (...) MUST_NOT(...)"
         elif must_fields != "" and should_fields == "" and mustnot_fields != "":
             q.query(Query.bool(
                         must=[Query.query_string(
@@ -257,6 +264,7 @@ class Esearch(models.Model):
                         )]
                     ))
                 
+        # Code for query creation like "MUST (...)"
         elif must_fields != "" and should_fields == "" and mustnot_fields == "":
             q.query(Query.query_string(
                 must_values + " OR " + 
@@ -266,8 +274,8 @@ class Esearch(models.Model):
                 must_fields,default_operator='AND'
             ))
         
+        # ERROR
         else:
             print "Query Error :( -> Rewrite your query!"
         
-        #print q.json()
         return q.get()
