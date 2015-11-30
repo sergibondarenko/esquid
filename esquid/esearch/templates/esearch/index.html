@@ -1,18 +1,24 @@
 {% load staticfiles %}
 <!--<link rel="stylesheet" href="{% static 'esearch/css/bootstrap.min.css' %}" /> Download Bootstrap icons to use.-->
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css">
 <link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-1.10.0.custom.css' %}" />
 <link rel="stylesheet" href="{% static 'esearch/css/jquery.ui.1.10.0.ie.css' %}" />
 <!--
 <link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-autocomplete.css' %}" />
 -->
 
+<!--
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"></script>
+-->
 <script src="{% static 'esearch/js/common/jquery.min.js' %}"></script>
 <script src="{% static 'esearch/js/common/jquery-ui-1.9.2.custom.min.js' %}"></script>
-<!--
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
--->
 <script src="{% static 'esearch/js/common/bootstrap.min.js' %}"></script>
+<script src="{% static 'esearch/js/common/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'esearch/js/common/dataTables.bootstrap.min.js' %}"></script>
 {% load get_from_dict %}
 {% load get_from_source %}
 {% csrf_token %}
@@ -91,7 +97,15 @@
         <div class="events">
           <div id="output-free-search"></div>
 		  <br>
-		  <div><table class="table table-bordered table-hover" id="records_table"></table></div>
+		  	<div id="main_output_field">
+				<!--
+				<table class="table table-striped table-bordered" id="records_table" cellspacing="0" width="100%">
+					<thead></thead>
+					<tfoot></tfoot>
+					<tbody></tbody>
+		  		</table>
+				-->
+  			</div>
         </div>
 	  </div> <!--row-->
 	  <br>

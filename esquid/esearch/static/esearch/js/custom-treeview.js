@@ -23,7 +23,16 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 
 
 // Table builder
-var buildRecordsTable = function(json_objs, table_name){
+var buildRecordsTable = function(json_objs, table_name, div_id){
+	var myTable = '<table class="table table-striped table-bordered" id='
+					+ table_name +' cellspacing="0" width="100%"></table>';
+
+	table_name = '#' + table_name
+	div_id = '#' + div_id
+
+	$(table_name).remove();	// Remove table
+	$('#records_table_wrapper').remove();	// Remove table
+	$(div_id).append(myTable);
 
 	// Find _source dictionary keys
 	var hit = json_objs.hits.hits[0];
@@ -31,13 +40,29 @@ var buildRecordsTable = function(json_objs, table_name){
 	var hr_arr = Object.keys(hit._source); 
 
 	// Loop through _source keys array and append them to <th>
+	var thead = $('<thead>');
+	var tfoot = $('<tfoot>');
+	var tbody = $('<tbody>');
+	$(table_name).append(tbody);
+
+	// Fill <thead>
 	var tr = $('<tr>');
+	thead.append(tr);
 	for(var i in hr_arr){
 		tr.append('<th>' + hr_arr[i] + '</th>');
 	}
-	$(table_name).append(tr);
+	//$(table_name).append(tr);
+	$(table_name).append(thead); 
+	
+	// Fill <tfoot>
+	tr = $('<tr>') 
+	tfoot.append(tr);
+	for(var i in hr_arr){
+		tr.append('<th>' + hr_arr[i] + '</th>');
+	}
+	$(table_name).append(tfoot);
 
-	// Loop through all received documents
+	// Loop through all received documents and add cells
 	$.each(json_objs.hits.hits, function(key, value){
 		hit = value;
 		tr = $('<tr>');	// Create a row
@@ -47,8 +72,10 @@ var buildRecordsTable = function(json_objs, table_name){
 			var src_arr = hit._source
 			tr.append('<td>' + src_arr[i] + '</td>');	// Create a cell and append it to the row created above
 		}
-		$(table_name).append(tr);	// Append the row to the table
+		//$(table_name).append(tr);	// Append the row to the table
+		tbody.append(tr);
 	});
+	$(table_name).DataTable();	//Build DataTable
 }
 
 
@@ -64,7 +91,7 @@ var buildHeaderRecordsTable = function(json_objs, div_id, rec_header){
 			var src_arr = hit._source
 			if(i == rec_header)
 				// Create a cell and append it to the row created above
-				tr.append('<p><a href="#" id="record_header">' + src_arr[i] + '</a></p>');	
+				tr.append('<p><a href="#" id="output-record-header">' + src_arr[i] + '</a></p>');	
 		}
 		$(div_id).append(tr);	// Append the row to the table
 	});
@@ -219,8 +246,9 @@ $('#input-field-search').keypress(function (e) {
 		if(free_search_check){
 			console.log(search_query);
 			sendVarsToBackend(search_query, 'json', 'freesearch/', function(result){
-				$('#records_table').empty();	// Empty table
-				buildRecordsTable(result, '#records_table:last');
+				buildRecordsTable(result, 'records_table', 'main_output_field');
+				//buildRecordsTable(result, '#records_table:last');
+				//buildHeaderRecordsTable(result, '#output-free-search', 'text_entry');
 	  			//$('#output-free-search').html(result);
 				console.log(result);
 			});
@@ -230,11 +258,6 @@ $('#input-field-search').keypress(function (e) {
 			$('#output-free-search').html('<p>'+ choice1 +' '+ choice2 +'</p>');	
 		}
 	}
-});
-
-
-$('record_header').click(function(e){
-	console.log('clicked');
 });
 
 
