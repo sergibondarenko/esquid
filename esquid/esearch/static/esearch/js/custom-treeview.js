@@ -203,9 +203,15 @@ $('#input-field-search').keypress(function (e) {
 		if(free_search_check){
 			console.log(search_query);
 			sendVarsToBackend(search_query, 'json', 'freesearch/', function(result){
+<<<<<<< HEAD
 				$('#records_table').empty();	// Empty table before  
 				buildRecordsTable(result, '#records_table:last');
 				//$('#output-free-search').html(result);
+=======
+				$('#records_table').empty();	// Empty table
+				buildRecordsTable(result, '#records_table:last');
+	  			//$('#output-free-search').html(result);
+>>>>>>> frontend
 				console.log(result);
 			});
 		} else {
@@ -224,8 +230,12 @@ $('record_header').click(function(e){
 
 //// Get first Elasticsearch records from server and display them on index.html
 //sendVarsToBackend('', 'json', 'search_all/', function(result){
+<<<<<<< HEAD
 //	//$('#output-free-search').html(result);
 //	//buildRecordsTable(result, '#records_table:last');
+=======
+//	buildRecordsTable(result, '#records_table:last');
+>>>>>>> frontend
 //	//buildHeaderRecordsTable(result, '#output-free-search', 'text_entry');
 //});
 
