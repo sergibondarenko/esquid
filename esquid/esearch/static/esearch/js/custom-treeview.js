@@ -201,7 +201,8 @@ $('#input-field-search').keypress(function (e) {
 
 		// Verify if Free Search is checked
 		if(free_search_check){
-			sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
+			console.log(search_query);
+			sendVarsToBackend(search_query, 'html', 'freesearch/', function(result){
 	  			$('#output-free-search').html(result);
 				console.log(result);
 			});

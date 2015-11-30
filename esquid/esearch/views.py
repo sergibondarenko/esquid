@@ -17,7 +17,7 @@ Esearch.init('localhost', '9200')
 
 # Test function. Render index.html
 def index(request):
-    result = Esearch.search_all('shakespeare')
+    result = Esearch.searchAll('shakespeare')
     
     context = {'results_list': result}
     return render(request, 'esearch/index.html', context)
@@ -26,7 +26,7 @@ def index(request):
 # Test function. Return all Elasticsearch results to frontend.
 def search_all(request):
     if request.is_ajax():
-        result = Esearch.search_all('shakespeare')
+        result = Esearch.searchAll('shakespeare')
         data = simplejson.dumps(result)
     else:
         data = 'Server: Fail to receive ajax request'
@@ -55,7 +55,7 @@ def livesearch(request):
         q = msg[1]
 
         prog_lang = ["ActionScript","AppleScript","Asp","BASIC", \
-                        "C","C++","Clojure","COBOL", \
+                        "C","C++`","Clojure","COBOL", \
                         "ColdFusion","Erlang","Fortran","Groovy", \
                         "Haskell","Java","JavaScript","Lisp", \
                         "Perl","PHP","Python","Ruby","Scala","Scheme"];
@@ -68,3 +68,17 @@ def livesearch(request):
 
     mimetype = 'application/json'
     return HttpResponse(data, mimetype)
+
+
+# Test function. Return calls to frontend.
+def freesearch(request):
+    if request.is_ajax():
+        message = request.POST['msg']
+        result = Esearch.freeSearch(message, 'shakespeare')
+        data = simplejson.dumps(result)
+    else:
+        data = 'Server: Fail to receive ajax request'
+
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)
+

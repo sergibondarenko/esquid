@@ -8,4 +8,5 @@ urlpatterns = [
 	url(r'^postmenu/$', views.postmenu, name='postmenu'),
 	url(r'^livesearch/$', views.livesearch, name='livesearch'),
 	url(r'^search_all/$', views.search_all, name='search_all'),
+	url(r'^freesearch/$', views.freesearch, name='freesearch'),
 ]
