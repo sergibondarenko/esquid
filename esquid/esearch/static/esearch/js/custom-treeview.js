@@ -137,9 +137,8 @@ var $selectableTree = initSelectableTree();
 var findSelectableNodes = function() {
 	return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: false } ]);
 };
-
-
 var selectableNodes = findSelectableNodes();
+
 // Multiselect functionality of menu
 $('#chk-select-multi:checkbox').on('change', function () {
 	console.log('multi-select change');
@@ -147,15 +146,32 @@ $('#chk-select-multi:checkbox').on('change', function () {
 	selectableNodes = findSelectableNodes();          
 });
 
+// Select/unselect/toggle nodes
+$('#input-select-node').on('keyup', function (e) {
+  selectableNodes = findSelectableNodes();
+  $('.select-node').prop('disabled', !(selectableNodes.length >= 1));
+});
+
+//$('#btn-select-node.select-node').on('click', function (e) {
+//  $selectableTree.treeview('selectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+//});
+//
+//$('#btn-unselect-node.select-node').on('click', function (e) {
+//  $selectableTree.treeview('unselectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+//});
+//
+//$('#btn-toggle-selected.select-node').on('click', function (e) {
+//  $selectableTree.treeview('toggleNodeSelected', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+//});
 
 // Clear query field
-$('#btn-clear-log-query-field.select-node').on('click', function (e) {
+$('#btn-clear-log-query-field.logic-btn').on('click', function (e) {
 	$('#selectable-output').val('');
 });
 
 
 // AND - MUST
-$('#btn-must.select-node').on('click', function (e) {
+$('#btn-must.logic-btn').on('click', function (e) {
 	var query_log = $('#selectable-output').val();
 	query_log += ' MUST ';
 	$('#selectable-output').val('');
@@ -164,7 +180,7 @@ $('#btn-must.select-node').on('click', function (e) {
 
 
 // OR - SHOULD
-$('#btn-should.select-node').on('click', function (e) {
+$('#btn-should.logic-btn').on('click', function (e) {
 	var query_log = $('#selectable-output').val();
 	query_log += ' SHOULD ';
 	$('#selectable-output').val('');
@@ -173,7 +189,7 @@ $('#btn-should.select-node').on('click', function (e) {
 
 
 // NOT - MUST NOT
-$('#btn-mustnot.select-node').on('click', function (e) {
+$('#btn-mustnot.logic-btn').on('click', function (e) {
 	var query_log = $('#selectable-output').val();
 	query_log += ' MUST_NOT ';
 	$('#selectable-output').val('');
@@ -182,7 +198,7 @@ $('#btn-mustnot.select-node').on('click', function (e) {
 
 
 // SEARCH button. Sends search query to server. 
-$('#btn-search.select-node').on('click', function (e) {
+$('#btn-search.logic-btn').on('click', function (e) {
 	var search_query = $('#selectable-output').val();
 
 	sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
