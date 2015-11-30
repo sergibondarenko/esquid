@@ -58,7 +58,7 @@ var initSelectableTree = function() {
     multiSelect: $('#chk-select-multi').is(':checked'),
     onNodeSelected: function(event, node) {
 	
-	    // Log query
+	    // Log query to textarea
 		function log_query(message){
 			var query_log = $('#selectable-output').val();
 			query_log += message;
@@ -69,9 +69,10 @@ var initSelectableTree = function() {
 		// Autocomplete search field
 		$('#input-field-search').autocomplete({
 			source: function(request, response){
-				sendVarsToBackend(request.term, 'json', 'livesearch/', response)
+				sendVarsToBackend(node.parents + "." + node.text + "=" + request.term,
+						'json', 'livesearch/', response)	// Search word in a specific field of a document in Elastic
 			},
-			select: function(event, ui){
+			select: function(event, ui){	// Add search query to textarea on select event
 				log_query("(" + node.parents + "." + node.text + "=" + ui.item.label + ")");
 			},
 			delay: 1000,

@@ -50,7 +50,10 @@ def postmenu(request):
 # Test function. Live search in Elasticsearch fields 
 def livesearch(request):
     if request.is_ajax():
-        q = request.POST.get('msg', '')
+        msg = request.POST.get('msg', '')
+        msg = msg.split('=')
+        q = msg[1]
+
         prog_lang = ["ActionScript","AppleScript","Asp","BASIC", \
                         "C","C++","Clojure","COBOL", \
                         "ColdFusion","Erlang","Fortran","Groovy", \
