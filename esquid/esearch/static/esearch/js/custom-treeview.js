@@ -1,4 +1,4 @@
-$(function() {  // main function, runs at start
+$(function() {  // main() function, runs at start
 
 
 // Send vars from menu to backend
@@ -20,6 +20,7 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 	  }
 	}); // ajax post
 }
+
 
 // Table builder
 var buildRecordsTable = function(json_objs, table_name){
@@ -49,6 +50,26 @@ var buildRecordsTable = function(json_objs, table_name){
 		$(table_name).append(tr);	// Append the row to the table
 	});
 }
+
+
+// Headers table builder
+var buildHeaderRecordsTable = function(json_objs, div_id, rec_header){
+	// Loop through all received documents
+	$.each(json_objs.hits.hits, function(key, value){
+		hit = value;
+		tr = $('<div>');	// Create a row
+
+		// Loop through all elements of the _source dictionary
+		for(var i in hit._source){
+			var src_arr = hit._source
+			if(i == rec_header)
+				// Create a cell and append it to the row created above
+				tr.append('<p><a href="#" id="record_header">' + src_arr[i] + '</a></p>');	
+		}
+		$(div_id).append(tr);	// Append the row to the table
+	});
+}
+
 
 // Init menu, turn on menu node event listening
 var initSelectableTree = function() {
@@ -88,6 +109,7 @@ var initSelectableTree = function() {
   });
 };
 
+
 // Build menu
 var menuItems = {};
 var buildMenu = function(){
@@ -116,6 +138,7 @@ var findSelectableNodes = function() {
 	return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: false } ]);
 };
 
+
 var selectableNodes = findSelectableNodes();
 // Multiselect functionality of menu
 $('#chk-select-multi:checkbox').on('change', function () {
@@ -124,10 +147,12 @@ $('#chk-select-multi:checkbox').on('change', function () {
 	selectableNodes = findSelectableNodes();          
 });
 
+
 // Clear query field
 $('#btn-clear-log-query-field.select-node').on('click', function (e) {
 	$('#selectable-output').val('');
 });
+
 
 // AND - MUST
 $('#btn-must.select-node').on('click', function (e) {
@@ -137,6 +162,7 @@ $('#btn-must.select-node').on('click', function (e) {
 	$('#selectable-output').val(query_log);
 });
 
+
 // OR - SHOULD
 $('#btn-should.select-node').on('click', function (e) {
 	var query_log = $('#selectable-output').val();
@@ -145,6 +171,7 @@ $('#btn-should.select-node').on('click', function (e) {
 	$('#selectable-output').val(query_log);
 });
 
+
 // NOT - MUST NOT
 $('#btn-mustnot.select-node').on('click', function (e) {
 	var query_log = $('#selectable-output').val();
@@ -152,6 +179,7 @@ $('#btn-mustnot.select-node').on('click', function (e) {
 	$('#selectable-output').val('');
 	$('#selectable-output').val(query_log);
 });
+
 
 // SEARCH button. Sends search query to server. 
 $('#btn-search.select-node').on('click', function (e) {
@@ -185,9 +213,16 @@ $('#input-field-search').keypress(function (e) {
 	}
 });
 
+
+$('record_header').click(function(e){
+	console.log('clicked');
+});
+
+
 // Get first Elasticsearch records from server and display them on index.html
 sendVarsToBackend('', 'json', 'search_all/', function(result){
 	buildRecordsTable(result, '#records_table:last');
+	//buildHeaderRecordsTable(result, '#output-free-search', 'text_entry');
 });
 
 
