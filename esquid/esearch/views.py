@@ -23,7 +23,7 @@ def index(request):
     return render(request, 'esearch/index.html', context)
 
 
-# Test function. Return all Elasticsearch results to frontend.
+# Function for search. Return data to frontend.
 def search_all(request):
     if request.is_ajax():
         result = Esearch.searchAll('shakespeare')
@@ -70,25 +70,37 @@ def livesearch(request):
     return HttpResponse(data, mimetype)
 
 
-# Test function. Return calls to frontend.
+# Function for Free search. Return data to frontend.
 def freesearch(request):
-    if request.is_ajax():
-        message = request.POST['msg']
-        result = Esearch.freeSearch(message, 'shakespeare')
-        data = simplejson.dumps(result)
+    if request.method == 'POST':
+        if request.is_ajax():
+            try:
+                message = request.POST['msg']
+                result = Esearch.freeSearch(message)
+                data = simplejson.dumps(result)
+            except:
+                raise Http404('Exception occurred: Contact the system administrator for more informations!')
+        else:
+            data = 'Server: Fail to receive ajax request'
     else:
-        data = 'Server: Fail to receive ajax request'
+        return HttpResponse('Server: Nothing to return from server.')
     mimetype = 'application/json'
     return HttpResponse(data, mimetype)
 
-# Test function. Return calls to frontend.
+# Function for Logical search. Return data to frontend.
 def logicalsearch(request):
-    if request.is_ajax():
-        message = request.POST['msg']
-        result = Esearch.logicalSearch(message)
-        data = simplejson.dumps(result)
+    if request.method == 'POST':
+        if request.is_ajax():
+            try:
+                message = request.POST['msg']
+                result = Esearch.logicalSearch(message)
+                data = simplejson.dumps(result)
+            except:
+                raise Http404('Exception occurred: Contact the system administrator for more informations!')
+        else:
+            data = 'Server: Fail to receive ajax request'
     else:
-        data = 'Server: Fail to receive ajax request'
+        return HttpResponse('Server: Nothing to return from server.')
     mimetype = 'application/json'
     return HttpResponse(data, mimetype)
 

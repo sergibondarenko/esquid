@@ -20,10 +20,15 @@ class Esearch(models.Model):
         return res
 
 
-    def freeSearch(self, searchquery, index):
+    def freeSearch(self, searchquery):
         # Elasticsearch connection initialization
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
         # q = ElasticQuery(es=Elasticsearch(),index='shakespeare',doc_type='')
+        index = ""
+        # Find all indexes and remove them from the query
+        if searchquery.find("\index") != -1:
+            index = searchquery.replace(", ",",").replace(" ",",")[searchquery.find("\index") + 7:]
+            searchquery = searchquery[:searchquery.find("\index")]
         q = ElasticQuery(es, index=index, doc_type='')
         ElasticQuery.sort(q,"_score",order="desc")
         ElasticQuery.size(q,100)
@@ -70,8 +75,6 @@ class Esearch(models.Model):
             
             # Code for query creation like "SELECT *** IN ***"
             elif searchquery.count("\in ") == 1 and searchquery.find("\\filter ") == -1 and searchquery.find("\\filter") == -1:
-                print searchquery[:searchquery.find("\in")]
-                print searchquery[searchquery.find("\in") + 4:].replace(","," ").split()
                 q.query(Query.query_string(
                     searchquery[:searchquery.find("\in")-1] + " AND " + 
                     searchquery[:searchquery.find("\in")-1].lower() + " AND " + 
@@ -93,9 +96,9 @@ class Esearch(models.Model):
             
             # ERROR
             else:
-                print "Query Error :( -> Rewrite your query!"
+                return "Query Error :( -> Rewrite your query!"
         else:
-            print "Query Error :( -> Rewrite your query!"
+            return "Query Error :( -> Rewrite your query!"
     
         return q.get()
 
@@ -148,6 +151,7 @@ class Esearch(models.Model):
         result = re.search('%' + conditions + '%.*?%', query).group()
         result = result[:len(result) - 2].replace('%' + conditions + '%',"")
         return result
+
 
     def logicalSearch(self,query):
         size = 100
