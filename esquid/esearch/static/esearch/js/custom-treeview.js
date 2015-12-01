@@ -33,6 +33,8 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 	$(table_name).remove();	// Remove table
 	$('#records_table_wrapper').remove();	// Remove table
     $(div_id).empty();
+	$(table_name).empty();
+    $('#output-free-search').empty();
 	$(div_id).append(myTable);
 
     try {
