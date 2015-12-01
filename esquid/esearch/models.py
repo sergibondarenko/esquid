@@ -7,16 +7,6 @@ from elasticquery import ElasticQuery, Filter, Query, Aggregate
 
 class Esearch(models.Model):
 	
-    size = 100
-    must_fields = ""
-    must_values = ""
-    should_fields = ""
-    should_values = ""
-    mustnot_fields = ""
-    mustnot_values = ""
-    all_indexes = ""
-
-
     def init(self, host, port):
         self.host = host
         self.port = port
@@ -111,7 +101,7 @@ class Esearch(models.Model):
 
 
     # Function that returns all elements that match our requirements in a single specific field
-    def return_single_field_search(field,search):
+    def return_single_field_search(self,field,search):
         q = ElasticQuery(es=Elasticsearch(),index=all_indexes,doc_type='')
         q.aggregate(Aggregate.terms(search,field))
         q.query(Query.query_string(search,field,default_operator='OR',analyze_wildcard=True))
@@ -121,7 +111,7 @@ class Esearch(models.Model):
     
 
     # Function that returns index name, fields name or values
-    def return_values(query,start,end):
+    def return_values(self,query,start,end):
         count = query.count("(")
         indexes = ""
         while count > 0:
@@ -133,7 +123,7 @@ class Esearch(models.Model):
     
 
     # Function that remove all duplicates found in a string
-    def remove_dupl(string):
+    def remove_dupl(self,string):
         list_terms = []
         string = string.replace(","," ")
         list_terms = string.split()
@@ -144,43 +134,48 @@ class Esearch(models.Model):
         return terms
     
     # Function that splits the entire query into max three parts, each for MUST, SHOULD or MUST NOT condition
-    def return_elements(query,conditions):
+    def return_elements(self,query,conditions):
         result = re.search('%' + conditions + '%.*?%', query).group()
         result = result[:len(result) - 2].replace('%' + conditions + '%',"")
         return result
 
-
-    def logicalSearch(request, query):
-        # Create Esearch obj of class Esearch
-        Esearch = Esearch()
-        Esearch.init('localhost', '9200')
+    def logicalSearch(self,query):
+        size = 100
+        must_fields = ""
+        must_values = ""
+        should_fields = ""
+        should_values = ""
+        mustnot_fields = ""
+        mustnot_values = ""
+        all_indexes = ""
 
         # Remove space on query string and add % as prefix and suffix 
         query = query.replace("MUST ","%MUST%").replace("SHOULD ","%SHOULD%").replace("MUST_NOT ","%MUST_NOT%") + " %"
         
         # Populate class variables with values only if the relative condition is present on our query
         if query.find("%MUST%") != -1:
-            result = Esearch.return_elements(query,"MUST")
-            must_fields = Esearch.return_values(result,".","=")
-            must_fields = must_fields[:len(remove_dupl(must_fields)) - 1]
-            must_values = Esearch.return_values(result,"=",")")
+            result = self.return_elements(query,"MUST")
+            must_fields = self.return_values(result,".","=")
+            must_fields = must_fields[:len(self.remove_dupl(must_fields)) - 1]
+            must_values = self.return_values(result,"=",")")
         if query.find("%SHOULD%") != -1:
-            result = Esearch.return_elements(query,"SHOULD")
-            should_fields = Esearch.return_values(result,".","=")
-            should_fields = should_fields[:len(remove_dupl(should_fields)) - 1]
-            should_values = Esearch.return_values(result,"=",")")
+            result = self.return_elements(query,"SHOULD")
+            should_fields = self.return_values(result,".","=")
+            should_fields = should_fields[:len(self.remove_dupl(should_fields)) - 1]
+            should_values = self.return_values(result,"=",")")
         if query.find("%MUST_NOT%") != -1:
-            result = Esearch.return_elements(query,"MUST_NOT")
-            mustnot_fields = Esearch.return_values(result,".","=")
-            mustnot_fields = mustnot_fields[:len(remove_dupl(mustnot_fields)) - 1]
-            mustnot_values = Esearch.return_values(result,"=",")")
+            result = self.return_elements(query,"MUST_NOT")
+            mustnot_fields = self.return_values(result,".","=")
+            mustnot_fields = mustnot_fields[:len(self.remove_dupl(mustnot_fields)) - 1]
+            mustnot_values = self.return_values(result,"=",")")
         
         # Elasticsearch connection initialization
-        all_indexes = all_indexes + Esearch.return_values(result,"(",".") + ','
-        q = ElasticQuery(es=Elasticsearch(),index=Esearch.remove_dupl(all_indexes),doc_type='')
+        all_indexes = self.return_values(result,"(",".")
+        es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
+        q = ElasticQuery(es,index=self.remove_dupl(all_indexes),doc_type='')
         ElasticQuery.sort(q,"_score",order="desc")
         ElasticQuery.size(q,str(size))
-        
+
         # Code for query creation like "MUST (...) SHOULD (...) MUST_NOT(...)"
         if must_fields != "" and should_fields != "" and mustnot_fields != "":
             q.query(Query.bool(
