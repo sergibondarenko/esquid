@@ -1,18 +1,24 @@
 {% load staticfiles %}
 <!--<link rel="stylesheet" href="{% static 'esearch/css/bootstrap.min.css' %}" /> Download Bootstrap icons to use.-->
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css">
 <link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-1.10.0.custom.css' %}" />
 <link rel="stylesheet" href="{% static 'esearch/css/jquery.ui.1.10.0.ie.css' %}" />
 <!--
 <link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-autocomplete.css' %}" />
 -->
 
+<!--
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"></script>
+-->
 <script src="{% static 'esearch/js/common/jquery.min.js' %}"></script>
 <script src="{% static 'esearch/js/common/jquery-ui-1.9.2.custom.min.js' %}"></script>
-<!--
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
--->
 <script src="{% static 'esearch/js/common/bootstrap.min.js' %}"></script>
+<script src="{% static 'esearch/js/common/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'esearch/js/common/dataTables.bootstrap.min.js' %}"></script>
 {% load get_from_dict %}
 {% load get_from_source %}
 {% csrf_token %}
@@ -56,11 +62,11 @@
             <input type="input" class="form-control" id="input-field-search" placeholder="Type here to search..." value="">
           </div>
           <div class="form-group">
-            <button type="button" class="btn btn-danger select-node" id="btn-clear-log-query-field">CLEAR</button>
-            <button type="button" class="btn btn-success select-node" id="btn-search">SEARCH</button>
-            <button type="button" class="btn btn-primary select-node" id="btn-must">MUST</button>
-            <button type="button" class="btn btn-primary select-node" id="btn-should">SHOULD</button>
-            <button type="button" class="btn btn-primary select-node" id="btn-mustnot">MUST NOT</button>
+            <button type="button" class="btn btn-danger logic-btn" id="btn-clear-log-query-field">CLEAR</button>
+            <button type="button" class="btn btn-success logic-btn" id="btn-search">SEARCH</button>
+            <button type="button" class="btn btn-primary logic-btn" id="btn-must">MUST</button>
+            <button type="button" class="btn btn-primary logic-btn" id="btn-should">SHOULD</button>
+            <button type="button" class="btn btn-primary logic-btn" id="btn-mustnot">MUST NOT</button>
           </div>
 
 		  	<!--
@@ -91,7 +97,15 @@
         <div class="events">
           <div id="output-free-search"></div>
 		  <br>
-		  <div><table class="table table-bordered table-hover" id="records_table"></table></div>
+		  	<div id="main_output_field">
+				<!--
+				<table class="table table-striped table-bordered" id="records_table" cellspacing="0" width="100%">
+					<thead></thead>
+					<tfoot></tfoot>
+					<tbody></tbody>
+		  		</table>
+				-->
+  			</div>
         </div>
 	  </div> <!--row-->
 	  <br>

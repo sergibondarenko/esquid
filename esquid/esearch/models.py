@@ -100,8 +100,18 @@ class Esearch(models.Model):
         return q.get()
 
 
-    # Function that returns all elements that match our requirements in a single specific field
-    def return_single_field_search(self,field,search):
+
+    # Autocomplete input field
+    def autoComplete(request, searchquery, index):
+        self.index = index
+
+        es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
+        res = es.search(index = index, body = {"query": {"match_all": {}}})
+        return res
+
+
+    # Autoupdate
+    def return_single_field_search(field,search):
         q = ElasticQuery(es=Elasticsearch(),index=all_indexes,doc_type='')
         q.aggregate(Aggregate.terms(search,field))
         q.query(Query.query_string(search,field,default_operator='OR',analyze_wildcard=True))

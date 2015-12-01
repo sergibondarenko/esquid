@@ -23,7 +23,16 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 
 
 // Table builder
-var buildRecordsTable = function(json_objs, table_name){
+var buildRecordsTable = function(json_objs, table_name, div_id){
+	var myTable = '<table class="table table-striped table-bordered" id='
+					+ table_name +' cellspacing="0" width="100%"></table>';
+
+	table_name = '#' + table_name
+	div_id = '#' + div_id
+
+	$(table_name).remove();	// Remove table
+	$('#records_table_wrapper').remove();	// Remove table
+	$(div_id).append(myTable);
 
 	// Find _source dictionary keys
 	var hit = json_objs.hits.hits[0];
@@ -31,13 +40,29 @@ var buildRecordsTable = function(json_objs, table_name){
 	var hr_arr = Object.keys(hit._source); 
 
 	// Loop through _source keys array and append them to <th>
+	var thead = $('<thead>');
+	var tfoot = $('<tfoot>');
+	var tbody = $('<tbody>');
+	$(table_name).append(tbody);
+
+	// Fill <thead>
 	var tr = $('<tr>');
+	thead.append(tr);
 	for(var i in hr_arr){
 		tr.append('<th>' + hr_arr[i] + '</th>');
 	}
-	$(table_name).append(tr);
+	//$(table_name).append(tr);
+	$(table_name).append(thead); 
+	
+	// Fill <tfoot>
+	tr = $('<tr>') 
+	tfoot.append(tr);
+	for(var i in hr_arr){
+		tr.append('<th>' + hr_arr[i] + '</th>');
+	}
+	$(table_name).append(tfoot);
 
-	// Loop through all received documents
+	// Loop through all received documents and add cells
 	$.each(json_objs.hits.hits, function(key, value){
 		hit = value;
 		tr = $('<tr>');	// Create a row
@@ -47,8 +72,10 @@ var buildRecordsTable = function(json_objs, table_name){
 			var src_arr = hit._source
 			tr.append('<td>' + src_arr[i] + '</td>');	// Create a cell and append it to the row created above
 		}
-		$(table_name).append(tr);	// Append the row to the table
+		//$(table_name).append(tr);	// Append the row to the table
+		tbody.append(tr);
 	});
+	$(table_name).DataTable();	//Build DataTable
 }
 
 
@@ -64,7 +91,7 @@ var buildHeaderRecordsTable = function(json_objs, div_id, rec_header){
 			var src_arr = hit._source
 			if(i == rec_header)
 				// Create a cell and append it to the row created above
-				tr.append('<p><a href="#" id="record_header">' + src_arr[i] + '</a></p>');	
+				tr.append('<p><a href="#" id="output-record-header">' + src_arr[i] + '</a></p>');	
 		}
 		$(div_id).append(tr);	// Append the row to the table
 	});
@@ -137,9 +164,8 @@ var $selectableTree = initSelectableTree();
 var findSelectableNodes = function() {
 	return $selectableTree.treeview('search', [ $('#input-select-node').val(), { ignoreCase: false, exactMatch: false } ]);
 };
-
-
 var selectableNodes = findSelectableNodes();
+
 // Multiselect functionality of menu
 $('#chk-select-multi:checkbox').on('change', function () {
 	console.log('multi-select change');
@@ -147,15 +173,32 @@ $('#chk-select-multi:checkbox').on('change', function () {
 	selectableNodes = findSelectableNodes();          
 });
 
+// Select/unselect/toggle nodes
+$('#input-select-node').on('keyup', function (e) {
+  selectableNodes = findSelectableNodes();
+  $('.select-node').prop('disabled', !(selectableNodes.length >= 1));
+});
+
+//$('#btn-select-node.select-node').on('click', function (e) {
+//  $selectableTree.treeview('selectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+//});
+//
+//$('#btn-unselect-node.select-node').on('click', function (e) {
+//  $selectableTree.treeview('unselectNode', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+//});
+//
+//$('#btn-toggle-selected.select-node').on('click', function (e) {
+//  $selectableTree.treeview('toggleNodeSelected', [ selectableNodes, { silent: $('#chk-select-silent').is(':checked') }]);
+//});
 
 // Clear query field
-$('#btn-clear-log-query-field.select-node').on('click', function (e) {
+$('#btn-clear-log-query-field.logic-btn').on('click', function (e) {
 	$('#selectable-output').val('');
 });
 
 
 // AND - MUST
-$('#btn-must.select-node').on('click', function (e) {
+$('#btn-must.logic-btn').on('click', function (e) {
 	var query_log = $('#selectable-output').val();
 	query_log += ' MUST ';
 	$('#selectable-output').val('');
@@ -164,7 +207,7 @@ $('#btn-must.select-node').on('click', function (e) {
 
 
 // OR - SHOULD
-$('#btn-should.select-node').on('click', function (e) {
+$('#btn-should.logic-btn').on('click', function (e) {
 	var query_log = $('#selectable-output').val();
 	query_log += ' SHOULD ';
 	$('#selectable-output').val('');
@@ -173,7 +216,7 @@ $('#btn-should.select-node').on('click', function (e) {
 
 
 // NOT - MUST NOT
-$('#btn-mustnot.select-node').on('click', function (e) {
+$('#btn-mustnot.logic-btn').on('click', function (e) {
 	var query_log = $('#selectable-output').val();
 	query_log += ' MUST_NOT ';
 	$('#selectable-output').val('');
@@ -182,7 +225,7 @@ $('#btn-mustnot.select-node').on('click', function (e) {
 
 
 // SEARCH button. Sends search query to server. 
-$('#btn-search.select-node').on('click', function (e) {
+$('#btn-search.logic-btn').on('click', function (e) {
 	var search_query = $('#selectable-output').val();
 
 	sendVarsToBackend(search_query, 'html', 'logicalsearch/', function(result){
@@ -202,8 +245,11 @@ $('#input-field-search').keypress(function (e) {
 		// Verify if Free Search is checked
 		if(free_search_check){
 			console.log(search_query);
-			sendVarsToBackend(search_query, 'html', 'freesearch/', function(result){
-	  			$('#output-free-search').html(result);
+			sendVarsToBackend(search_query, 'json', 'freesearch/', function(result){
+				buildRecordsTable(result, 'records_table', 'main_output_field');
+				//buildRecordsTable(result, '#records_table:last');
+				//buildHeaderRecordsTable(result, '#output-free-search', 'text_entry');
+	  			//$('#output-free-search').html(result);
 				console.log(result);
 			});
 		} else {
@@ -215,16 +261,13 @@ $('#input-field-search').keypress(function (e) {
 });
 
 
-$('record_header').click(function(e){
-	console.log('clicked');
-});
+//// Get first Elasticsearch records from server and display them on index.html
+//sendVarsToBackend('', 'json', 'search_all/', function(result){
+//	//$('#output-free-search').html(result);
+//	buildRecordsTable(result, '#records_table:last');
+//	//buildHeaderRecordsTable(result, '#output-free-search', 'text_entry');
+//});
 
 
-// Get first Elasticsearch records from server and display them on index.html
-sendVarsToBackend('', 'json', 'search_all/', function(result){
-	buildRecordsTable(result, '#records_table:last');
-	//buildHeaderRecordsTable(result, '#output-free-search', 'text_entry');
-});
-
-
-}); // End of main function
+}); // End of main func
+    
