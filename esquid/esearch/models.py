@@ -96,9 +96,9 @@ class Esearch(models.Model):
             
             # ERROR
             else:
-                return "Query Error :( -> Rewrite your query!"
+                return HttpResponse('Server: Wrong query syntax!')
         else:
-            return "Query Error :( -> Rewrite your query!"
+            return HttpResponse('Server: Wrong query syntax!')
     
         return q.get()
 
@@ -285,6 +285,6 @@ class Esearch(models.Model):
         
         # ERROR
         else:
-            print "Query Error :( -> Rewrite your query!"
+            return HttpResponse('Server: Wrong query syntax!')
         
         return q.get()

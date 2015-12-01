@@ -29,7 +29,7 @@ def search_all(request):
         result = Esearch.searchAll('shakespeare')
         data = simplejson.dumps(result)
     else:
-        data = 'Server: Fail to receive ajax request'
+        data = 'Server: Fail to receive ajax request!'
 
     mimetype = 'application/json'
     return HttpResponse(data, mimetype)
@@ -42,9 +42,9 @@ def postmenu(request):
              message = request.POST['msg']
              return HttpResponse(str(message))
          else:
-             raise Http404
+             raise Exception('Server: Exception occurred. Contact the system administrator for more informations!')
      else:
-         return HttpResponse('Server: Nothing to return from server.')
+         return HttpResponse('Server: Nothing to return from server!')
     
 	
 # Test function. Live search in Elasticsearch fields 
@@ -78,14 +78,15 @@ def freesearch(request):
                 message = request.POST['msg']
                 result = Esearch.freeSearch(message)
                 data = simplejson.dumps(result)
+                mimetype = 'application/json'
+                return HttpResponse(data, mimetype)
             except:
-                raise Http404('Exception occurred: Contact the system administrator for more informations!')
+                raise Exception('Server: Exception occurred. Contact the system administrator for more informations!')
         else:
-            data = 'Server: Fail to receive ajax request'
+            return HttpResponse('Server: Fail to receive ajax request!')
     else:
-        return HttpResponse('Server: Nothing to return from server.')
-    mimetype = 'application/json'
-    return HttpResponse(data, mimetype)
+        return HttpResponse('Server: Nothing to return from server!')
+
 
 # Function for Logical search. Return data to frontend.
 def logicalsearch(request):
@@ -95,12 +96,11 @@ def logicalsearch(request):
                 message = request.POST['msg']
                 result = Esearch.logicalSearch(message)
                 data = simplejson.dumps(result)
+                mimetype = 'application/json'
+                return HttpResponse(data, mimetype)
             except:
-                raise Http404('Exception occurred: Contact the system administrator for more informations!')
+                raise Exception('Server: Exception occurred. Contact the system administrator for more informations!')
         else:
-            data = 'Server: Fail to receive ajax request'
+            return HttpResponse('Server: Fail to receive ajax request!')
     else:
-        return HttpResponse('Server: Nothing to return from server.')
-    mimetype = 'application/json'
-    return HttpResponse(data, mimetype)
-
+        return HttpResponse('Server: Nothing to return from server!')

@@ -33,7 +33,6 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 	$(table_name).remove();	// Remove table
 	$('#records_table_wrapper').remove();	// Remove table
     $(div_id).empty();
-	$(table_name).empty();
     $('#output-free-search').empty();
 	$(div_id).append(myTable);
 
@@ -42,6 +41,7 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
     	var hr_num = Object.keys(hit._source).length; 
 	}
 	catch(err) {
+		$(table_name).empty();
     	$(div_id).append("<div class='alert alert-danger' role='alert'>No results found!</div>");
 	}
 	
