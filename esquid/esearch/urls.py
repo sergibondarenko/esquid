@@ -9,4 +9,5 @@ urlpatterns = [
 	url(r'^livesearch/$', views.livesearch, name='livesearch'),
 	url(r'^search_all/$', views.search_all, name='search_all'),
 	url(r'^freesearch/$', views.freesearch, name='freesearch'),
+	url(r'^logicalsearch/$', views.logicalsearch, name='logicalsearch'),
 ]

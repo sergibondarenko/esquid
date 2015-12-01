@@ -228,7 +228,7 @@ $('#btn-mustnot.logic-btn').on('click', function (e) {
 $('#btn-search.logic-btn').on('click', function (e) {
 	var search_query = $('#selectable-output').val();
 
-	sendVarsToBackend(search_query, 'html', 'postmenu/', function(result){
+	sendVarsToBackend(search_query, 'html', 'logicalsearch/', function(result){
 		$('#output-free-search').html(result);
 		console.log(result);
 	});
