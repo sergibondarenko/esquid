@@ -112,6 +112,15 @@ class Esearch(models.Model):
         return q.get()
 
 
+    # Autocomplete input field
+    def autoComplete(request, searchquery, index):
+        self.index = index
+
+        es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
+        res = es.search(index = index, body = {"query": {"match_all": {}}})
+        return res
+
+
     # Autoupdate
     def return_single_field_search(field,search):
         q = ElasticQuery(es=Elasticsearch(),index=all_indexes,doc_type='')
