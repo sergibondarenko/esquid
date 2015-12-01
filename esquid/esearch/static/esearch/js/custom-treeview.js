@@ -228,8 +228,9 @@ $('#btn-mustnot.logic-btn').on('click', function (e) {
 $('#btn-search.logic-btn').on('click', function (e) {
 	var search_query = $('#selectable-output').val();
 
-	sendVarsToBackend(search_query, 'html', 'logicalsearch/', function(result){
-		$('#output-free-search').html(result);
+	sendVarsToBackend(search_query, 'json', 'logicalsearch/', function(result){
+		//$('#output-free-search').html(result);
+		buildRecordsTable(result, 'records_table', 'main_output_field');
 		console.log(result);
 	});
 });
