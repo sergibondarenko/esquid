@@ -25,7 +25,6 @@ class Esearch(models.Model):
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
         # q = ElasticQuery(es=Elasticsearch(),index='shakespeare',doc_type='')
         index = ""
-        print "AAA"
         # Find all indexes and remove them from the query
         if searchquery.find("\index") != -1:
             index = searchquery.replace(", ",",").replace(" ",",")[searchquery.find("\index") + 7:]
@@ -97,9 +96,9 @@ class Esearch(models.Model):
             
             # ERROR
             else:
-                print "Query Error :( -> Rewrite your query!"
+                return "Query Error :( -> Rewrite your query!"
         else:
-            print "Query Error :( -> Rewrite your query!"
+            return "Query Error :( -> Rewrite your query!"
     
         return q.get()
 

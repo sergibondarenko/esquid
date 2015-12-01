@@ -32,11 +32,18 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 
 	$(table_name).remove();	// Remove table
 	$('#records_table_wrapper').remove();	// Remove table
+    $(div_id).empty();
 	$(div_id).append(myTable);
 
+    try {
+		var hit = json_objs.hits.hits[0];
+    	var hr_num = Object.keys(hit._source).length; 
+	}
+	catch(err) {
+    	$(div_id).append("<div class='alert alert-danger' role='alert'>No results found!</div>");
+	}
+	
 	// Find _source dictionary keys
-	var hit = json_objs.hits.hits[0];
-	var hr_num = Object.keys(hit._source).length; 
 	var hr_arr = Object.keys(hit._source); 
 
 	// Loop through _source keys array and append them to <th>
@@ -256,7 +263,7 @@ $('#input-field-search').keypress(function (e) {
 		} else {
 			var choice1 = 'Select a menu node to search it.';
 		   	var choice2 = 'Or check "Free Search" to search in free mode.';	
-			$('#output-free-search').html('<p>'+ choice1 +' '+ choice2 +'</p>');	
+			$('#output-free-search').html("<div class='alert alert-warning' role='alert'>" + choice1 + " " + choice2 + "</div>");	
 		}
 	}
 });
