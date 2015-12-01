@@ -23,7 +23,7 @@ def index(request):
     return render(request, 'esearch/index.html', context)
 
 
-# Test function. Return all Elasticsearch results to frontend.
+# Function for search. Return data to frontend.
 def search_all(request):
     if request.is_ajax():
         result = Esearch.searchAll('shakespeare')
@@ -70,18 +70,18 @@ def livesearch(request):
     return HttpResponse(data, mimetype)
 
 
-# Test function. Return calls to frontend.
+# Function for Free search. Return data to frontend.
 def freesearch(request):
     if request.is_ajax():
         message = request.POST['msg']
-        result = Esearch.freeSearch(message, 'shakespeare')
+        result = Esearch.freeSearch(message)
         data = simplejson.dumps(result)
     else:
         data = 'Server: Fail to receive ajax request'
     mimetype = 'application/json'
     return HttpResponse(data, mimetype)
 
-# Test function. Return calls to frontend.
+# Function for Logical search. Return data to frontend.
 def logicalsearch(request):
     if request.is_ajax():
         message = request.POST['msg']

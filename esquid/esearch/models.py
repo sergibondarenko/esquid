@@ -25,9 +25,11 @@ class Esearch(models.Model):
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
         # q = ElasticQuery(es=Elasticsearch(),index='shakespeare',doc_type='')
         index = ""
+        print "AAA"
+        # Find all indexes and remove them from the query
         if searchquery.find("\index") != -1:
             index = searchquery.replace(", ",",").replace(" ",",")[searchquery.find("\index") + 7:]
-        print "INDEX: " + index
+            searchquery = searchquery[:searchquery.find("\index")]
         q = ElasticQuery(es, index=index, doc_type='')
         ElasticQuery.sort(q,"_score",order="desc")
         ElasticQuery.size(q,100)
@@ -150,6 +152,7 @@ class Esearch(models.Model):
         result = re.search('%' + conditions + '%.*?%', query).group()
         result = result[:len(result) - 2].replace('%' + conditions + '%',"")
         return result
+
 
     def logicalSearch(self,query):
         size = 100
