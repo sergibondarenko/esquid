@@ -289,6 +289,7 @@ $('#chk-select-freesearch').click(function(){
 	$('#treeview-selectable').children('ul').children('li').each(function(){
 		$(this).removeClass('node-selected');
 		$(this).css({'color':'#428bca', 'background-color':'white'});
+		$('#treeview-selectable').treeview('collapseAll', { silent: true });
 	});
 });
 
