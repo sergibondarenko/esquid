@@ -52,6 +52,7 @@ class Esearch(models.Model):
     def freeSearch(self, searchquery):
         # Elasticsearch connection initialization
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
+        size = 500
         # q = ElasticQuery(es=Elasticsearch(),index='shakespeare',doc_type='')
         index = ""
         # Find all indexes and remove them from the query
@@ -60,7 +61,7 @@ class Esearch(models.Model):
             searchquery = searchquery[:searchquery.find("\index")]
         q = ElasticQuery(es, index=index, doc_type='')
         ElasticQuery.sort(q,"_score",order="desc")
-        ElasticQuery.size(q,100)
+        ElasticQuery.size(q,size)
         
         # Check correct query syntax (query must have max 2 '\in' and max 1 '\filter')
         if searchquery.count("\in ") <= 2 and searchquery.count("\\filter ") <= 1:
@@ -174,7 +175,7 @@ class Esearch(models.Model):
 
 
     def logicalSearch(self,query):
-        size = 100
+        size = 500
         must_fields = ""
         must_values = ""
         should_fields = ""
