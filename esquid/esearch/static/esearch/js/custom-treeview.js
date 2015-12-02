@@ -47,6 +47,10 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 	
 	// Find _source dictionary keys
 	var hr_arr = Object.keys(hit._source); 
+	var hr_status = Object.keys(hit); 
+
+	console.log('hr_arr= ' + hr_arr);
+	console.log('hr_status= ' + hr_status);
 
 	// Loop through _source keys array and append them to <th>
 	var thead = $('<thead>');
@@ -57,6 +61,8 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 	// Fill <thead>
 	var tr = $('<tr>');
 	thead.append(tr);
+	tr.append('<th>score</th>');
+
 	for(var i in hr_arr){
 		tr.append('<th>' + hr_arr[i] + '</th>');
 	}
@@ -66,6 +72,8 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 	// Fill <tfoot>
 	tr = $('<tr>') 
 	tfoot.append(tr);
+
+	tr.append('<th>score</th>');
 	for(var i in hr_arr){
 		tr.append('<th>' + hr_arr[i] + '</th>');
 	}
@@ -76,10 +84,12 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 		hit = value;
 		tr = $('<tr>');	// Create a row
 
+		tr.append('<td>' + hit._score + '</td>');	// Get score
+
 		// Loop through all elements of the _source dictionary
-		for(var i in hit._source){
+		for(var j in hit._source){
 			var src_arr = hit._source
-			tr.append('<td>' + src_arr[i] + '</td>');	// Create a cell and append it to the row created above
+			tr.append('<td>' + src_arr[j] + '</td>');	// Create a cell and append it to the row created above
 		}
 		//$(table_name).append(tr);	// Append the row to the table
 		tbody.append(tr);
@@ -258,7 +268,7 @@ $('#input-field-search').keypress(function (e) {
 
 		// Verify if Free Search is checked
 		if(free_search_check){
-			console.log(search_query);
+			//console.log(search_query);
 			sendVarsToBackend(search_query, 'json', 'freesearch/', function(result){
 				buildRecordsTable(result, 'records_table', 'main_output_field');
 				//buildRecordsTable(result, '#records_table:last');
