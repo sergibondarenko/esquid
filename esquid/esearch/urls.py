@@ -10,4 +10,5 @@ urlpatterns = [
 	url(r'^search_all/$', views.search_all, name='search_all'),
 	url(r'^freesearch/$', views.freesearch, name='freesearch'),
 	url(r'^logicalsearch/$', views.logicalsearch, name='logicalsearch'),
+	url(r'^autocomplete/$', views.autocomplete, name='autocomplete'),
 ]

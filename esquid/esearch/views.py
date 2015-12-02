@@ -70,6 +70,26 @@ def livesearch(request):
     return HttpResponse(data, mimetype)
 
 
+# Autocomplete
+def autocomplete(request):
+    if request.is_ajax():
+        msg = request.POST.get('msg', '')
+        query = msg.split('=')[1]
+        index = msg.split('=')[0].split('.')[0]
+        key = msg.split('=')[0].split('.')[1]
+        size = 30000
+
+        #result = Esearch.searchAll('shakespeare')
+        result = Esearch.autoComplete(query, key, index, size)
+        data = simplejson.dumps(result)
+    else:
+        data = 'Server: Fail to receive ajax request'
+
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)
+
+
+
 # Function for Free search. Return data to frontend.
 def freesearch(request):
     if request.method == 'POST':

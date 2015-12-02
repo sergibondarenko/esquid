@@ -20,6 +20,35 @@ class Esearch(models.Model):
         return res
 
 
+    def autoComplete(self, query, key, myindex, mysize):
+        self.index = myindex
+        values = []
+
+        es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
+
+        query += '.*'
+
+        # UPPER case
+        res = es.search(index = myindex, size = mysize, body = {"query": {"regexp": {key: query.upper()}}})
+        for doc in res['hits']['hits']:
+            values.append(doc['_source'][key])
+
+        # lower case
+        res = es.search(index = myindex, size = mysize, body = {"query": {"regexp": {key: query.lower()}}})
+        for doc in res['hits']['hits']:
+            values.append(doc['_source'][key])
+
+        # Title case
+        res = es.search(index = myindex, size = mysize, body = {"query": {"regexp": {key: query.title()}}})
+        for doc in res['hits']['hits']:
+            values.append(doc['_source'][key])
+
+        values = sorted(set(values))    # Remove duplicates and sort
+
+        return values
+
+
+
     def freeSearch(self, searchquery):
         # Elasticsearch connection initialization
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
@@ -102,15 +131,6 @@ class Esearch(models.Model):
     
         return q.get()
 
-
-
-    # Autocomplete input field
-    def autoComplete(request, searchquery, index):
-        self.index = index
-
-        es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
-        res = es.search(index = index, body = {"query": {"match_all": {}}})
-        return res
 
 
     # Autoupdate

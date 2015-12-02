@@ -1,1 +1,8 @@
 **/*.pyc
+esquid/*.pyc
+esquid/esquid/*.pyc
+esquid/esearch/*.pyc
+esquid/esearch/templatetags/*.pyc
+esquid/esearch/migrations/*.pyc
+esquid/polls/*.pyc
+

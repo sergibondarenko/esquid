@@ -127,7 +127,7 @@ var initSelectableTree = function() {
 		$('#input-field-search').autocomplete({
 			source: function(request, response){
 				sendVarsToBackend(node.parents + "." + node.text + "=" + request.term,
-						'json', 'livesearch/', response)	// Search word in a specific field of a document in Elastic
+						'json', 'autocomplete/', response)	// Search word in a specific field of a document in Elastic
 			},
 			select: function(event, ui){	// Add search query to textarea on select event
 				log_query("(" + node.parents + "." + node.text + "=" + ui.item.label + ")");
@@ -140,7 +140,7 @@ var initSelectableTree = function() {
     },
     onNodeUnselected: function (event, node) {
       //$('#selectable-output').append('<p>' + node.text + ' was unselected</p>');
-	  console.log(node.text);
+	  //console.log(node.text);
     }
   });
 };
