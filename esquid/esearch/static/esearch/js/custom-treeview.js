@@ -115,6 +115,8 @@ var initSelectableTree = function() {
     multiSelect: $('#chk-select-multi').is(':checked'),
     onNodeSelected: function(event, node) {
 	
+		//var free_search_check = $('#chk-select-freesearch').is(':checked');
+
 	    // Log query to textarea
 		function log_query(message){
 			var query_log = $('#selectable-output').val();
@@ -123,6 +125,7 @@ var initSelectableTree = function() {
 			$('#selectable-output').val(query_log);
 		}
 
+		//if(free_search_check == false){
 		// Autocomplete search field
 		$('#input-field-search').autocomplete({
 			source: function(request, response){
@@ -136,6 +139,7 @@ var initSelectableTree = function() {
 			autoFocus: true,
 			minLength: 1
 		});
+		//}
 
     },
     onNodeUnselected: function (event, node) {
@@ -270,6 +274,13 @@ $('#input-field-search').keypress(function (e) {
 	}
 });
 
+// Enter Free Search mode. Uncheck menu item. 
+$('#chk-select-freesearch').click(function(){
+	$('#treeview-selectable').children('ul').children('li').each(function(){
+		$(this).removeClass('node-selected');
+		$(this).css({'color':'#428bca', 'background-color':'white'});
+	});
+});
 
 //// Get first Elasticsearch records from server and display them on index.html
 //sendVarsToBackend('', 'json', 'search_all/', function(result){
