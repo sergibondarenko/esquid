@@ -88,23 +88,23 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 }
 
 
-// Headers table builder
-var buildHeaderRecordsTable = function(json_objs, div_id, rec_header){
-	// Loop through all received documents
-	$.each(json_objs.hits.hits, function(key, value){
-		hit = value;
-		tr = $('<div>');	// Create a row
-
-		// Loop through all elements of the _source dictionary
-		for(var i in hit._source){
-			var src_arr = hit._source
-			if(i == rec_header)
-				// Create a cell and append it to the row created above
-				tr.append('<p><a href="#" id="output-record-header">' + src_arr[i] + '</a></p>');	
-		}
-		$(div_id).append(tr);	// Append the row to the table
-	});
-}
+//// Headers table builder
+//var buildHeaderRecordsTable = function(json_objs, div_id, rec_header){
+//	// Loop through all received documents
+//	$.each(json_objs.hits.hits, function(key, value){
+//		hit = value;
+//		tr = $('<div>');	// Create a row
+//
+//		// Loop through all elements of the _source dictionary
+//		for(var i in hit._source){
+//			var src_arr = hit._source
+//			if(i == rec_header)
+//				// Create a cell and append it to the row created above
+//				tr.append('<p><a href="#" id="output-record-header">' + src_arr[i] + '</a></p>');	
+//		}
+//		$(div_id).append(tr);	// Append the row to the table
+//	});
+//}
 
 
 // Init menu, turn on menu node event listening
@@ -126,11 +126,11 @@ var initSelectableTree = function() {
 		// Autocomplete search field
 		$('#input-field-search').autocomplete({
 			source: function(request, response){
-				sendVarsToBackend(node.parents + "." + node.text + "=" + request.term,
+				sendVarsToBackend(node.parents + "." + node.name + "=" + request.term,
 						'json', 'autocomplete/', response)	// Search word in a specific field of a document in Elastic
 			},
 			select: function(event, ui){	// Add search query to textarea on select event
-				log_query("(" + node.parents + "." + node.text + "=" + ui.item.label + ")");
+				log_query("(" + node.parents + "." + node.name + "=" + ui.item.label + ")");
 			},
 			delay: 1000,
 			autoFocus: true,
