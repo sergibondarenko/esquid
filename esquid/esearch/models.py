@@ -75,12 +75,14 @@ class Esearch(models.Model):
             
             # Code for query creation like "SELECT *** IN ***"
             elif searchquery.count("\in ") == 1 and searchquery.find("\\filter ") == -1 and searchquery.find("\\filter") == -1:
-                q.query(Query.query_string(
-                    searchquery[:searchquery.find("\in")-1] + " AND " + 
-                    searchquery[:searchquery.find("\in")-1].lower() + " AND " + 
-                    searchquery[:searchquery.find("\in")-1].upper() + " AND " + 
-                    searchquery[:searchquery.find("\in")-1].title(),
-                    searchquery[searchquery.find("\in") + 4:].replace(","," ").split(),default_operator='AND'
+                q.query(Query.bool(
+                    must=[Query.query_string(
+                        searchquery[:searchquery.find("\in")-1] + " " + 
+                        searchquery[:searchquery.find("\in")-1].lower() + " " + 
+                        searchquery[:searchquery.find("\in")-1].upper() + " " + 
+                        searchquery[:searchquery.find("\in")-1].title(),
+                        searchquery[searchquery.find("\in") + 4:].replace(","," ").split()
+                    )]
                 ))
     
             # Code for query creation like "SELECT ***"
@@ -99,9 +101,8 @@ class Esearch(models.Model):
                 return HttpResponse('Server: Wrong query syntax!')
         else:
             return HttpResponse('Server: Wrong query syntax!')
-    
-        return q.get()
 
+        return q.get()
 
 
     # Autocomplete input field
