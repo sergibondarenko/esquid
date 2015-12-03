@@ -1,5 +1,7 @@
 $(function() {  // main() function, runs at start
 
+// Enable Bootstrap checkbox
+//$('#chk-select-freesearch').checkboxpicker();
 
 // Send vars from menu to backend
 var sendVarsToBackend = function(vars, datatype, url, callback){

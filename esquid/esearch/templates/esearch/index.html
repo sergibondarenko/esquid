@@ -13,6 +13,7 @@
 		<script src="{% static 'esearch/js/common/bootstrap.min.js' %}"></script>
 		<script src="{% static 'esearch/js/common/jquery.dataTables.min.js' %}"></script>
 		<script src="{% static 'esearch/js/common/dataTables.bootstrap.min.js' %}"></script>
+		<script src="{% static 'esearch/js/common/bootstrap-checkbox.js' %}"></script>
 		{% load get_from_dict %}
 		{% load get_from_source %}
 		{% csrf_token %}
@@ -30,10 +31,9 @@
             <input type="input" class="form-control" id="input-select-node" placeholder="Search for a menu node..." value="Shakespeare">
           </div>
           <div class="checkbox">
-            <label>
+            <label> 
               <input type="checkbox" class="checkbox" id="chk-select-freesearch" value="false">
-              Free Search
-            </label>
+            Free Search</label>
           </div>
 
           <div id="treeview-selectable" class=""></div>
