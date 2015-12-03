@@ -1,32 +1,21 @@
-{% load staticfiles %}
-<link rel="stylesheet" href="{% static 'esearch/css/bootstrap.min.css' %}" />
-<link rel="stylesheet" href="{% static 'esearch/css/dataTables.bootstrap.min.css' %}">
-<link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-1.10.0.custom.css' %}" />
-<link rel="stylesheet" href="{% static 'esearch/css/jquery.ui.1.10.0.ie.css' %}" />
-<!--
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css">
-<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-autocomplete.css' %}" />
--->
-
-<!--
-<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"></script>
--->
-<script src="{% static 'esearch/js/common/jquery.min.js' %}"></script>
-<script src="{% static 'esearch/js/common/jquery-ui-1.9.2.custom.min.js' %}"></script>
-<script src="{% static 'esearch/js/common/bootstrap.min.js' %}"></script>
-<script src="{% static 'esearch/js/common/jquery.dataTables.min.js' %}"></script>
-<script src="{% static 'esearch/js/common/dataTables.bootstrap.min.js' %}"></script>
-{% load get_from_dict %}
-{% load get_from_source %}
-{% csrf_token %}
 
 <!DOCTYPE html>
 <html>
   <head>
+		{% load staticfiles %}
+		<link rel="stylesheet" href="{% static 'esearch/css/bootstrap.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'esearch/css/dataTables.bootstrap.min.css' %}">
+		<link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-1.10.0.custom.css' %}" />
+		<link rel="stylesheet" href="{% static 'esearch/css/jquery.ui.1.10.0.ie.css' %}" />
+
+		<script src="{% static 'esearch/js/common/jquery.min.js' %}"></script>
+		<script src="{% static 'esearch/js/common/jquery-ui-1.9.2.custom.min.js' %}"></script>
+		<script src="{% static 'esearch/js/common/bootstrap.min.js' %}"></script>
+		<script src="{% static 'esearch/js/common/jquery.dataTables.min.js' %}"></script>
+		<script src="{% static 'esearch/js/common/dataTables.bootstrap.min.js' %}"></script>
+		{% load get_from_dict %}
+		{% load get_from_source %}
+		{% csrf_token %}
   </head>
   <body>
   	<div class="container">
@@ -41,12 +30,6 @@
             <input type="input" class="form-control" id="input-select-node" placeholder="Search for a menu node..." value="Shakespeare">
           </div>
           <div class="checkbox">
-			<!--
-            <label>
-              <input type="checkbox" class="checkbox" id="chk-select-multi" value="false">
-              Multi Select
-            </label>
-			-->
             <label>
               <input type="checkbox" class="checkbox" id="chk-select-freesearch" value="false">
               Free Search
@@ -56,7 +39,7 @@
           <div id="treeview-selectable" class=""></div>
         </div>
 
-        <div class="col-sm-6">
+        <div class="col-sm-8">
           <h2>Search</h2>
           <div class="form-group">
             <label for="input-select-node" class="sr-only">Search Tree:</label>
@@ -81,7 +64,7 @@
 
 	  <hr>
 	  <div class="row">
-        <div class="events">
+        <div class="col-sm-12 events">
           <div id="output-free-search"></div>
 		  <br>
 		  	<div id="main_output_field">
