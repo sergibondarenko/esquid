@@ -98,25 +98,6 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 }
 
 
-//// Headers table builder
-//var buildHeaderRecordsTable = function(json_objs, div_id, rec_header){
-//	// Loop through all received documents
-//	$.each(json_objs.hits.hits, function(key, value){
-//		hit = value;
-//		tr = $('<div>');	// Create a row
-//
-//		// Loop through all elements of the _source dictionary
-//		for(var i in hit._source){
-//			var src_arr = hit._source
-//			if(i == rec_header)
-//				// Create a cell and append it to the row created above
-//				tr.append('<p><a href="#" id="output-record-header">' + src_arr[i] + '</a></p>');	
-//		}
-//		$(div_id).append(tr);	// Append the row to the table
-//	});
-//}
-
-
 // Init menu, turn on menu node event listening
 var initSelectableTree = function() {
   return $('#treeview-selectable').treeview({
@@ -249,9 +230,17 @@ $('#btn-mustnot.logic-btn').on('click', function (e) {
 
 // SEARCH button. Sends search query to server. 
 $('#btn-search.logic-btn').on('click', function (e) {
-	var search_query = $('#selectable-output').val();
+	var free_search_check = $('#chk-select-freesearch').is(':checked');
+	
+	if(free_search_check){
+		var search_query = $('#input-field-search').val();
+		var view = 'freesearch/';	
+	} else { 
+		var search_query = $('#selectable-output').val();
+		var view = 'logicalsearch/';	
+	}
 
-	sendVarsToBackend(search_query, 'json', 'logicalsearch/', function(result){
+	sendVarsToBackend(search_query, 'json', view, function(result){
 		//$('#output-free-search').html(result);
 		buildRecordsTable(result, 'records_table', 'main_output_field');
 		console.log(result);
@@ -284,13 +273,35 @@ $('#input-field-search').keypress(function (e) {
 	}
 });
 
-// Enter Free Search mode. Uncheck menu item. 
+// Enter/exit Free Search mode and hide/unhide Logic Mode tools.
 $('#chk-select-freesearch').click(function(){
+	var free_search_check = $('#chk-select-freesearch').is(':checked');
+
+	// Uncheck index menu nodes
 	$('#treeview-selectable').children('ul').children('li').each(function(){
 		$(this).removeClass('node-selected');
 		$(this).css({'color':'#428bca', 'background-color':'white'});
 		$('#treeview-selectable').treeview('collapseAll', { silent: true });
 	});
+
+	// Hide/unhide all Logic Mode elements
+	$('#input-select-node').toggle();
+	$('#index-tree').toggle();
+	$('#treeview-selectable').toggle();
+	$('#selectable-output').toggle();
+	$('#logic-btn-div').children('button').each(function(){
+		$(this).toggle();
+	});
+
+	// Resize Search input field
+	if(free_search_check){
+		$('#input-field-search-div').removeClass('col-sm-8');
+		$('#input-field-search-div').addClass('col-sm-12');
+	} else {
+		$('#input-field-search-div').removeClass('col-sm-12');
+		$('#input-field-search-div').addClass('col-sm-8');
+	}
+
 });
 
 //// Get first Elasticsearch records from server and display them on index.html
