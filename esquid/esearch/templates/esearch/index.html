@@ -1,10 +1,11 @@
 {% load staticfiles %}
-<!--<link rel="stylesheet" href="{% static 'esearch/css/bootstrap.min.css' %}" /> Download Bootstrap icons to use.-->
-<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'esearch/css/bootstrap.min.css' %}" />
+<link rel="stylesheet" href="{% static 'esearch/css/dataTables.bootstrap.min.css' %}">
 <link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-1.10.0.custom.css' %}" />
 <link rel="stylesheet" href="{% static 'esearch/css/jquery.ui.1.10.0.ie.css' %}" />
 <!--
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-autocomplete.css' %}" />
 -->
 
@@ -69,11 +70,6 @@
             <button type="button" class="btn btn-primary logic-btn" id="btn-mustnot">MUST NOT</button>
           </div>
 
-		  	<!--
-        	<div class="events">
-        	  <div id="selectable-output"></div>
-        	</div>
-			-->
 			<div class="log_query">
 				<textarea class="form-control" id="selectable-output" rows="5"></textarea>
 			</div>
@@ -83,59 +79,17 @@
       </div>
 	  <br>
 
-	  <!--
-	  <div class="row">
-        <h2>Free Search</h2>
-        <div class="form-group">
-          <label for="input-select-node" class="sr-only">Search Tree:</label>
-          <input type="input" class="form-control" id="input-free-search" placeholder="Type here to search..." value="">
-        </div>
-	  </div> 
-		-->
 	  <hr>
 	  <div class="row">
         <div class="events">
           <div id="output-free-search"></div>
 		  <br>
 		  	<div id="main_output_field">
-				<!--
-				<table class="table table-striped table-bordered" id="records_table" cellspacing="0" width="100%">
-					<thead></thead>
-					<tfoot></tfoot>
-					<tbody></tbody>
-		  		</table>
-				-->
   			</div>
         </div>
 	  </div> <!--row-->
 	  <br>
 
-	  <!--
-      <div class="row">
-			  <h2>Display</h2>
-
-		{% if results_list %}
-			<ul>
-			{% for name in results_list.hits.hits %}
-				<li>{{ name|get_from_source:"play_name" }} {{ name|get_from_source:"text_entry" }} {{ name|get_from_source:"speaker" }}</li>
-			{% endfor %}
-			</ul>
-		{% else %}
-			<p>No results are available.</p>
-		{% endif %}
-		
-		{% if results_list %}
-			<ul>
-			{% for name in results_list.hits.hits %}
-				<li>{{ name }}</li>
-			{% endfor %}
-			</ul>
-		{% else %}
-			<p>No results are available.</p>
-		{% endif %}
-
-    </div>
-	-->
 
 </div> <!-- Container -->
 
