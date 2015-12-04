@@ -234,6 +234,7 @@ $('#btn-mustnot.logic-btn').on('click', function (e) {
 $('#btn-search.logic-btn').on('click', function (e) {
 	var free_search_check = $('#chk-select-freesearch').is(':checked');
 	
+	// Check the mode
 	if(free_search_check){
 		var search_query = $('#input-field-search').val();
 		var view = 'freesearch/';	
