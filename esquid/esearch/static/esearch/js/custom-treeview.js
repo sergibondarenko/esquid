@@ -3,6 +3,16 @@ $(function() {  // main() function, runs at start
 // Enable Bootstrap checkbox
 //$('#chk-select-freesearch').checkboxpicker();
 
+// Delete duplicates from an array
+var makeItUnique = function(arr){
+	var result = [];
+	$.each(arr, function(i, e){
+		if($.inArray(e, result) == -1)
+			result.push(e);
+	});
+	return result
+}
+	
 // Send vars from menu to backend
 var sendVarsToBackend = function(vars, datatype, url, callback){
 	$.ajax({
@@ -24,8 +34,11 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 }
 
 
-// Table builder
-var buildRecordsTable = function(json_objs, table_name, div_id){
+var table_colls_arr = [];
+
+// Restricted Table builder
+var buildRecordsTableRestricted = function(json_objs, table_name, div_id, colls_arr){
+	//console.log('table col= ' + colls_arr);
 	var myTable = '<table class="table table-striped table-bordered" id='
 					+ table_name +' cellspacing="0" width="100%"></table>';
 
@@ -36,6 +49,75 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 	$('#records_table_wrapper').remove();	// Remove table
     $(div_id).empty();
     $('#output-free-search').empty();
+	$(div_id).append(myTable);
+
+    try {
+		var hit = json_objs.hits.hits[0];
+    	var hr_num = Object.keys(hit._source).length; 
+	}
+	catch(err) {
+		$(table_name).empty();
+    	$(div_id).append("<div class='alert alert-danger' role='alert'>No results found!</div>");
+	}
+	
+	// Loop through _source keys array and append them to <th>
+	var thead = $('<thead>');
+	var tfoot = $('<tfoot>');
+	var tbody = $('<tbody>');
+	$(table_name).append(tbody);
+
+	// Fill <thead>
+	var tr = $('<tr>');
+	thead.append(tr);
+	tr.append('<th>score</th>');
+
+	for(var i in colls_arr){
+		tr.append('<th>' + colls_arr[i] + '</th>');
+	}
+	$(table_name).append(thead); 
+	
+	// Fill <tfoot>
+	tr = $('<tr>') 
+	tfoot.append(tr);
+
+	tr.append('<th>score</th>');
+	for(var i in colls_arr){
+		tr.append('<th>' + colls_arr[i] + '</th>');
+	}
+	$(table_name).append(tfoot);
+
+	// Loop through all received documents and add cells
+	$.each(json_objs.hits.hits, function(key, value){
+		hit = value;
+		tr = $('<tr>');	// Create a row
+
+		tr.append('<td>' + hit._score + '</td>');	// Get score
+
+		console.log("source= " + hit._source['speaker']);
+		for(var j in colls_arr){
+			tr.append('<td>' + hit._source[colls_arr[j]] + '</td>');	// Create a cell and append it to the row created above
+		}
+		//$(table_name).append(tr);	// Append the row to the table
+		tbody.append(tr);
+	});
+	$(table_name).DataTable();	//Build DataTable
+
+}
+
+// Table builder
+var buildRecordsTable = function(json_objs, table_name, div_id){
+	//console.log('table col= ' + colls_arr);
+	var myTable = '<table class="table table-striped table-bordered" id='
+					+ table_name +' cellspacing="0" width="100%"></table>';
+
+	table_name = '#' + table_name
+	div_id = '#' + div_id
+
+	$(table_name).remove();	// Remove table
+	$('#records_table_wrapper').remove();	// Remove table
+    $(div_id).empty();
+    $('#output-free-search').empty();
+
 	$(div_id).append(myTable);
 
     try {
@@ -97,45 +179,77 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 		tbody.append(tr);
 	});
 	$(table_name).DataTable();	//Build DataTable
+
 }
 
+var autoComplete = function(node) {
+	
+	// Log query to textarea
+	function log_query(message){
+		var query_log = $('#selectable-output').val();
+		query_log += message;
+		$('#selectable-output').val('');
+		$('#selectable-output').val(query_log);
+	}
+	
+	// Autocomplete search field
+	$('#input-field-search').autocomplete({
+		source: function(request, response){
+			sendVarsToBackend(node.parents + "." + node.name + "=" + request.term,
+					'json', 'autocomplete/', response)	// Search word in a specific field of a document in Elastic
+		},
+		select: function(event, ui){	// Add search query to textarea on select event
+			log_query("(" + node.parents + "." + node.name + "=" + ui.item.label + ")");
+		},
+		delay: 1000,
+		autoFocus: true,
+		minLength: 1
+	});
+}
 
 // Init menu, turn on menu node event listening
 var initSelectableTree = function() {
   return $('#treeview-selectable').treeview({
   	color: "#428bca",
 	data: menuItems,
-    multiSelect: $('#chk-select-multi').is(':checked'),
+	showCheckbox: true,
+    //multiSelect: $('#chk-select-multi').is(':checked'),
     onNodeSelected: function(event, node) {
-	
-		//var free_search_check = $('#chk-select-freesearch').is(':checked');
+		table_colls_arr.push(node.name);	// Push coll names to table coll array
+		table_colls_arr = makeItUnique(table_colls_arr);
 
-	    // Log query to textarea
-		function log_query(message){
-			var query_log = $('#selectable-output').val();
-			query_log += message;
-			$('#selectable-output').val('');
-			$('#selectable-output').val(query_log);
-		}
+		autoComplete(node);
+  	},
+    onNodeChecked: function(event, node) {
+		table_colls_arr.push(node.name);	// Push coll names to table coll array
+		table_colls_arr = makeItUnique(table_colls_arr);
 
-		//if(free_search_check == false){
-		// Autocomplete search field
-		$('#input-field-search').autocomplete({
-			source: function(request, response){
-				sendVarsToBackend(node.parents + "." + node.name + "=" + request.term,
-						'json', 'autocomplete/', response)	// Search word in a specific field of a document in Elastic
-			},
-			select: function(event, ui){	// Add search query to textarea on select event
-				log_query("(" + node.parents + "." + node.name + "=" + ui.item.label + ")");
-			},
-			delay: 1000,
-			autoFocus: true,
-			minLength: 1
-		});
+		autoComplete(node);
+	    //// Log query to textarea
+		//function log_query(message){
+		//	var query_log = $('#selectable-output').val();
+		//	query_log += message;
+		//	$('#selectable-output').val('');
+		//	$('#selectable-output').val(query_log);
 		//}
 
+		//// Autocomplete search field
+		//$('#input-field-search').autocomplete({
+		//	source: function(request, response){
+		//		sendVarsToBackend(node.parents + "." + node.name + "=" + request.term,
+		//				'json', 'autocomplete/', response)	// Search word in a specific field of a document in Elastic
+		//	},
+		//	select: function(event, ui){	// Add search query to textarea on select event
+		//		log_query("(" + node.parents + "." + node.name + "=" + ui.item.label + ")");
+		//	},
+		//	delay: 1000,
+		//	autoFocus: true,
+		//	minLength: 1
+		//});
+
     },
-    onNodeUnselected: function (event, node) {
+    //onNodeUnselected: function (event, node) {
+    onNodeUnchecked: function (event, node) {
       //$('#selectable-output').append('<p>' + node.text + ' was unselected</p>');
 	  //console.log(node.text);
     }
@@ -238,16 +352,23 @@ $('#btn-search.logic-btn').on('click', function (e) {
 	if(free_search_check){
 		var search_query = $('#input-field-search').val();
 		var view = 'freesearch/';	
+
+		sendVarsToBackend(search_query, 'json', view, function(result){
+			//$('#output-free-search').html(result);
+			buildRecordsTable(result, 'records_table', 'main_output_field');
+			console.log(result);
+		});
 	} else { 
 		var search_query = $('#selectable-output').val();
 		var view = 'logicalsearch/';	
+
+		sendVarsToBackend(search_query, 'json', view, function(result){
+			//$('#output-free-search').html(result);
+			buildRecordsTableRestricted(result, 'records_table', 'main_output_field', table_colls_arr);
+			console.log(result);
+		});
 	}
 
-	sendVarsToBackend(search_query, 'json', view, function(result){
-		//$('#output-free-search').html(result);
-		buildRecordsTable(result, 'records_table', 'main_output_field');
-		console.log(result);
-	});
 });
 
 
@@ -264,8 +385,6 @@ $('#input-field-search').keypress(function (e) {
 			sendVarsToBackend(search_query, 'json', 'freesearch/', function(result){
 				buildRecordsTable(result, 'records_table', 'main_output_field');
 				//buildRecordsTable(result, '#records_table:last');
-				//buildHeaderRecordsTable(result, '#output-free-search', 'text_entry');
-	  			//$('#output-free-search').html(result);
 				console.log(result);
 			});
 		} else {
@@ -280,7 +399,7 @@ $('#input-field-search').keypress(function (e) {
 $('#chk-select-freesearch').click(function(){
 	var free_search_check = $('#chk-select-freesearch').is(':checked');
 
-	// Uncheck index menu nodes
+	// Unhighlight index menu nodes and collapse menu
 	$('#treeview-selectable').children('ul').children('li').each(function(){
 		$(this).removeClass('node-selected');
 		$(this).css({'color':'#428bca', 'background-color':'white'});
@@ -303,6 +422,11 @@ $('#chk-select-freesearch').click(function(){
 	} else {
 		$('#input-field-search-div').removeClass('col-sm-12');
 		$('#input-field-search-div').addClass('col-sm-8');
+
+		$('#records_table').remove();	// Remove table
+		$('#records_table_wrapper').remove();	// Remove table
+    	$('#main_output_field').empty();
+    	$('#output-free-search').empty();
 	}
 
 });
