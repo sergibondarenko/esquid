@@ -3,6 +3,7 @@ $(function() {  // main() function, runs at start
 // Enable Bootstrap checkbox
 //$('#chk-select-freesearch').checkboxpicker();
 
+
 // Delete duplicates from an array
 var makeItUnique = function(arr){
 	var result = [];
@@ -93,7 +94,6 @@ var buildRecordsTableRestricted = function(json_objs, table_name, div_id, colls_
 
 		tr.append('<td>' + hit._score + '</td>');	// Get score
 
-		console.log("source= " + hit._source['speaker']);
 		for(var j in colls_arr){
 			tr.append('<td>' + hit._source[colls_arr[j]] + '</td>');	// Create a cell and append it to the row created above
 		}
@@ -182,7 +182,11 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 
 }
 
+// Autocomplete function
 var autoComplete = function(node) {
+	
+	var search_size = $('#input-search-size-logics').val();	// Get search size
+	search_size = 'search(' + search_size + ')';
 	
 	// Log query to textarea
 	function log_query(message){
@@ -195,6 +199,7 @@ var autoComplete = function(node) {
 	// Autocomplete search field
 	$('#input-field-search').autocomplete({
 		source: function(request, response){
+			//sendVarsToBackend(search_size + " " + node.parents + "." + node.name + "=" + request.term,
 			sendVarsToBackend(node.parents + "." + node.name + "=" + request.term,
 					'json', 'autocomplete/', response)	// Search word in a specific field of a document in Elastic
 		},
@@ -225,28 +230,6 @@ var initSelectableTree = function() {
 		table_colls_arr = makeItUnique(table_colls_arr);
 
 		autoComplete(node);
-	    //// Log query to textarea
-		//function log_query(message){
-		//	var query_log = $('#selectable-output').val();
-		//	query_log += message;
-		//	$('#selectable-output').val('');
-		//	$('#selectable-output').val(query_log);
-		//}
-
-		//// Autocomplete search field
-		//$('#input-field-search').autocomplete({
-		//	source: function(request, response){
-		//		sendVarsToBackend(node.parents + "." + node.name + "=" + request.term,
-		//				'json', 'autocomplete/', response)	// Search word in a specific field of a document in Elastic
-		//	},
-		//	select: function(event, ui){	// Add search query to textarea on select event
-		//		log_query("(" + node.parents + "." + node.name + "=" + ui.item.label + ")");
-		//	},
-		//	delay: 1000,
-		//	autoFocus: true,
-		//	minLength: 1
-		//});
-
     },
     //onNodeUnselected: function (event, node) {
     onNodeUnchecked: function (event, node) {
@@ -352,7 +335,10 @@ $('#btn-search.logic-btn').on('click', function (e) {
 	if(free_search_check){
 		var search_query = $('#input-field-search').val();
 		var view = 'freesearch/';	
+		var search_size = $('#input-search-size-frees').val();	// Get search size
+		search_size = '\\search ' + search_size;
 
+		//sendVarsToBackend(search_size + " " + search_query, 'json', view, function(result){
 		sendVarsToBackend(search_query, 'json', view, function(result){
 			//$('#output-free-search').html(result);
 			buildRecordsTable(result, 'records_table', 'main_output_field');
@@ -361,7 +347,10 @@ $('#btn-search.logic-btn').on('click', function (e) {
 	} else { 
 		var search_query = $('#selectable-output').val();
 		var view = 'logicalsearch/';	
+		var search_size = $('#input-search-size-logics').val();	// Get search size
+		search_size = 'search(' + search_size + ')';
 
+		//sendVarsToBackend(search_size + " " + search_query, 'json', view, function(result){
 		sendVarsToBackend(search_query, 'json', view, function(result){
 			//$('#output-free-search').html(result);
 			buildRecordsTableRestricted(result, 'records_table', 'main_output_field', table_colls_arr);
@@ -381,7 +370,10 @@ $('#input-field-search').keypress(function (e) {
 
 		// Verify if Free Search is checked
 		if(free_search_check){
-			//console.log(search_query);
+			var search_size = $('#input-search-size-frees').val();	// Get search size
+			search_size = '\\search ' + search_size;
+
+			//sendVarsToBackend(search_size + " " + search_query, 'json', 'freesearch/', function(result){
 			sendVarsToBackend(search_query, 'json', 'freesearch/', function(result){
 				buildRecordsTable(result, 'records_table', 'main_output_field');
 				//buildRecordsTable(result, '#records_table:last');
@@ -414,14 +406,19 @@ $('#chk-select-freesearch').click(function(){
 	$('#logic-btn-div').children('div').children('button').each(function(){
 		$(this).toggle();
 	});
+	$('#logic-btn-div').children('div').children('input').each(function(){
+		$(this).toggle();
+	});
 
 	// Resize Search input field
 	if(free_search_check){
 		$('#input-field-search-div').removeClass('col-sm-8');
 		$('#input-field-search-div').addClass('col-sm-12');
+		$('#input-search-size-frees').attr('type', 'input');
 	} else {
 		$('#input-field-search-div').removeClass('col-sm-12');
 		$('#input-field-search-div').addClass('col-sm-8');
+		$('#input-search-size-frees').attr('type', 'hidden');
 
 		$('#records_table').remove();	// Remove table
 		$('#records_table_wrapper').remove();	// Remove table

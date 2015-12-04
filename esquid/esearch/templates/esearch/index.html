@@ -30,10 +30,15 @@
             <label for="input-select-node" class="sr-only">Search Tree:</label>
             <input type="input" class="form-control" id="input-select-node" placeholder="Search for a menu node..." value="Shakespeare">
           </div>
-          <div class="checkbox">
-            <label> 
-              <input type="checkbox" class="checkbox" id="chk-select-freesearch" value="false">
-            Free Search</label>
+
+          <div class="form-group">
+			<form class="form-inline">
+            	<label class="checkbox"> 
+            	  <input type="checkbox" class="checkbox" id="chk-select-freesearch" value="false">
+				  Free Search
+				</label>&nbsp;&nbsp;&nbsp;&nbsp;
+            	<input type="hidden" class="form-control" id="input-search-size-frees" placeholder="Search Size" value="30000">
+			</form>
           </div>
 
           <div id="treeview-selectable" class=""></div>
@@ -46,19 +51,26 @@
             <label for="input-select-node" class="sr-only">Search Tree:</label>
             <input type="input" class="form-control" id="input-field-search" placeholder="Type here to search..." value="">
 			<span class="input-group-btn">
-            	<button type="button" class="btn btn-success logic-btn" id="btn-search">SEARCH</button>
+            	<button type="button" class="btn btn-success logic-btn" id="btn-search">
+					<span class="glyphicon glyphicon-search" aria-hidden="true"></span> SEARCH
+				</button>
 			</span>
           </div>
 		  <br>
 
 			<div class="btn-toolbar form-group" role="toolbar" aria-label="Toolbar with button groups" id="logic-btn-div">
-		  		<div class="btn-group" role="group" aria-label="Third group"> 
-					<button type="button" class="btn btn-danger logic-btn" id="btn-clear-log-query-field">CLEAR</button> 
+		  		<div class="btn-group" role="group" aria-label="First group"> 
+					<button type="button" class="btn btn-danger logic-btn" id="btn-clear-log-query-field">
+						<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> CLEAR
+					</button> 
 				</div>
 				<div class="btn-group" role="group" aria-label="Second group"> 
 					<button type="button" class="btn btn-primary logic-btn" id="btn-must">MUST</button> 
 					<button type="button" class="btn btn-primary logic-btn" id="btn-should">SHOULD</button> 
 					<button type="button" class="btn btn-primary logic-btn" id="btn-mustnot">MUST NOT</button> 
+				</div>
+		  		<div class="btn-group col-xs-3" role="group" aria-label="Third group"> 
+            		<input type="input" class="form-control" id="input-search-size-logics" placeholder="Search Size" value="30000">
 				</div>
 			</div>
 
