@@ -176,7 +176,7 @@ class Esearch(models.Model):
 
 
     def logicalSearch(self,query):
-        size = 500
+        size = 5000
         must_fields = ""
         must_values = ""
         should_fields = ""
