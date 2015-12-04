@@ -411,7 +411,7 @@ $('#chk-select-freesearch').click(function(){
 	$('#index-tree').toggle();
 	$('#treeview-selectable').toggle();
 	$('#selectable-output').toggle();
-	$('#logic-btn-div').children('button').each(function(){
+	$('#logic-btn-div').children('div').children('button').each(function(){
 		$(this).toggle();
 	});
 
