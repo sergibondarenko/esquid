@@ -26,7 +26,7 @@ class Esearch(models.Model):
 
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
 
-        query += '.*'
+        query = '.*' + query + '.*'
 
         # UPPER case
         res = es.search(index = myindex, size = mysize, body = {"query": {"regexp": {key: query.upper()}}})
@@ -52,7 +52,7 @@ class Esearch(models.Model):
     def freeSearch(self, searchquery):
         # Elasticsearch connection initialization
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
-        size = 500
+        size = 5000
         # q = ElasticQuery(es=Elasticsearch(),index='shakespeare',doc_type='')
         index = ""
         # Find all indexes and remove them from the query
