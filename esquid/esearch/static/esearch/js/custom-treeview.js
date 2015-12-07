@@ -3,7 +3,6 @@ $(function() {  // main() function, runs at start
 // Enable Bootstrap checkbox
 //$('#chk-select-freesearch').checkboxpicker();
 
-
 // Delete duplicates from an array
 var makeItUnique = function(arr){
 	var result = [];
@@ -16,6 +15,9 @@ var makeItUnique = function(arr){
 	
 // Send vars from menu to backend
 var sendVarsToBackend = function(vars, datatype, url, callback){
+	var spinner = new Spinner().spin();	// Init progress bar
+	$('#main_output_progress').append(spinner.el);
+
 	$.ajax({
 	  type: 'POST',
 	  dataType: datatype,
@@ -27,9 +29,11 @@ var sendVarsToBackend = function(vars, datatype, url, callback){
 		callback(data);
 	  	console.log('Successful response from backend!');
 		//console.log(data);
+		spinner.stop();
 	  },
 	  error: function(data){
 	  	console.log('Error (ajax post): Unable to receive data from server.');
+		spinner.stop();
 	  }
 	}); // ajax post
 }
@@ -39,6 +43,7 @@ var table_colls_arr = [];
 
 // Restricted Table builder
 var buildRecordsTableRestricted = function(json_objs, table_name, div_id, colls_arr){
+
 	//console.log('table col= ' + colls_arr);
 	var myTable = '<table class="table table-striped table-bordered dislpay" id='
 					+ table_name +' cellspacing="0" width="100%"></table>';
@@ -115,7 +120,6 @@ var buildRecordsTableRestricted = function(json_objs, table_name, div_id, colls_
 			'colvis'
 		]
 	});	//Build DataTable
-
 }
 
 // Table builder
@@ -368,9 +372,7 @@ $('#btn-search.logic-btn').on('click', function (e) {
 
 		//sendVarsToBackend(search_size + " " + search_query, 'json', view, function(result){
 		sendVarsToBackend(search_query, 'json', view, function(result){
-			//$('#output-free-search').html(result);
 			buildRecordsTable(result, 'records_table', 'main_output_field');
-			console.log(result);
 		});
 	} else { 
 		var search_query = $('#selectable-output').val();
@@ -380,12 +382,9 @@ $('#btn-search.logic-btn').on('click', function (e) {
 
 		//sendVarsToBackend(search_size + " " + search_query, 'json', view, function(result){
 		sendVarsToBackend(search_query, 'json', view, function(result){
-			//$('#output-free-search').html(result);
 			buildRecordsTableRestricted(result, 'records_table', 'main_output_field', table_colls_arr);
-			console.log(result);
 		});
 	}
-
 });
 
 
