@@ -40,7 +40,7 @@ var table_colls_arr = [];
 // Restricted Table builder
 var buildRecordsTableRestricted = function(json_objs, table_name, div_id, colls_arr){
 	//console.log('table col= ' + colls_arr);
-	var myTable = '<table class="table table-striped table-bordered" id='
+	var myTable = '<table class="table table-striped table-bordered dislpay" id='
 					+ table_name +' cellspacing="0" width="100%"></table>';
 
 	table_name = '#' + table_name
@@ -100,7 +100,21 @@ var buildRecordsTableRestricted = function(json_objs, table_name, div_id, colls_
 		//$(table_name).append(tr);	// Append the row to the table
 		tbody.append(tr);
 	});
-	$(table_name).DataTable();	//Build DataTable
+	$(table_name).DataTable({
+		//dom: '<lf<rt>iBp>',
+		dom: '<lBf<rt>ip>',
+		buttons: [
+		    'copy',
+		    //'csv',
+		    'pdf',
+			{
+				extend: 'excel',
+				title: 'report',
+		   		extension: '.xlsx'	
+			},
+			'colvis'
+		]
+	});	//Build DataTable
 
 }
 
@@ -178,7 +192,21 @@ var buildRecordsTable = function(json_objs, table_name, div_id){
 		//$(table_name).append(tr);	// Append the row to the table
 		tbody.append(tr);
 	});
-	$(table_name).DataTable();	//Build DataTable
+	$(table_name).DataTable({
+		//dom: '<lf<rt>iBp>',
+		dom: '<lBf<rt>ip>',
+		buttons: [
+		    'copy',
+		    //'csv',
+		    'pdf',
+			{
+				extend: 'excel',
+				title: 'report',
+		   		extension: '.xlsx'	
+			},
+			'colvis'
+		]
+	});	//Build DataTable
 
 }
 

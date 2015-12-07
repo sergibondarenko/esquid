@@ -4,16 +4,32 @@
   <head>
 		{% load staticfiles %}
 		<link rel="stylesheet" href="{% static 'esearch/css/bootstrap.min.css' %}" />
-		<link rel="stylesheet" href="{% static 'esearch/css/dataTables.bootstrap.min.css' %}">
 		<link rel="stylesheet" href="{% static 'esearch/css/jquery-ui-1.10.0.custom.css' %}" />
 		<link rel="stylesheet" href="{% static 'esearch/css/jquery.ui.1.10.0.ie.css' %}" />
+
+		<link rel="stylesheet" href="{% static 'esearch/css/dataTables.bootstrap.min.css' %}">
+		<link rel="stylesheet" href="{% static 'esearch/css/buttons.dataTables.min.css' %}" />
 
 		<script src="{% static 'esearch/js/common/jquery.min.js' %}"></script>
 		<script src="{% static 'esearch/js/common/jquery-ui-1.9.2.custom.min.js' %}"></script>
 		<script src="{% static 'esearch/js/common/bootstrap.min.js' %}"></script>
+		<script src="{% static 'esearch/js/common/bootstrap-checkbox.js' %}"></script>
+
 		<script src="{% static 'esearch/js/common/jquery.dataTables.min.js' %}"></script>
 		<script src="{% static 'esearch/js/common/dataTables.bootstrap.min.js' %}"></script>
-		<script src="{% static 'esearch/js/common/bootstrap-checkbox.js' %}"></script>
+		<script src="{% static 'esearch/js/common/dataTables.buttons.min.js' %}"></script>
+		<!--
+		<script src="https://nightly.datatables.net/buttons/js/buttons.colVis.min.js"></script>
+		<script src="//cdn.datatables.net/buttons/1.1.0/js/buttons.flash.min.js"></script>
+		<script src="https://nightly.datatables.net/buttons/js/dataTables.buttons.min.js"></script>
+		<script src="{% static 'esearch/js/common/jszip.min.js' %}"></script>
+		-->
+		<script src="{% static 'esearch/js/common/pdfmake.min.js' %}"></script>
+		<script src="{% static 'esearch/js/common/vfs_fonts.js' %}"></script>
+		<script src="{% static 'esearch/js/common/buttons.flash.min.js' %}"></script>
+		<script src="{% static 'esearch/js/common/buttons.colVis.min.js' %}"></script>
+		<script src="{% static 'esearch/js/common/buttons.html5.min.js' %}"></script>
+
 		{% load get_from_dict %}
 		{% load get_from_source %}
 		{% csrf_token %}
@@ -90,16 +106,10 @@
 			</div>
 
 			<hr>
-			<div id="datatables_btns">
-			</div>
-
-        	<div class="events">
-        	  <div id="output-free-search"></div>
-			  <br>
-			  <br>
-			  	<div id="main_output_field">
-  				</div>
-        	</div>
+			<div id="output-free-search"></div>
+			<br>
+			<br>
+			<div id="main_output_field"></div>
 
         </div>
 
