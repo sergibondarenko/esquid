@@ -105,7 +105,6 @@ class Esearch(models.Model):
         else:
             return HttpResponse('Server: Wrong query syntax!')
 
-        print q.get()
         return q.get()
 
 
@@ -116,7 +115,6 @@ class Esearch(models.Model):
         q.query(Query.query_string(search,field,default_operator='OR',analyze_wildcard=True))
         q.fields(field)
         ElasticQuery.sort(q,"_score",order="desc")
-        print q.get()
     
 
     # Function that returns index name, fields name or values
