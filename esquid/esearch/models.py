@@ -96,7 +96,7 @@ class Esearch(models.Model):
     
             # Code for query creation like "SELECT ***"
             elif searchquery.count("\in ") == 0 and searchquery.count("\in") == 0 and searchquery.find("\\filter ") == -1 and searchquery.find("\\filter") == -1:
-                q.query(searchquery,"_all")
+                q.query(self.compose_query(searchquery,"_all"))
             
             # ERROR
             else:
@@ -148,7 +148,7 @@ class Esearch(models.Model):
 
 
     def logicalSearch(self,query):
-        size = 5000
+        size = 500
         must_fields = ""
         must_values = ""
         should_fields = ""
