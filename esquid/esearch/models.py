@@ -47,13 +47,24 @@ class Esearch(models.Model):
 
         return values
 
+    # Code used to compose query_string with or without '"', based on wildcards find
+    def compose_query(self,terms,fields):
+        if terms.find("*") == -1 and terms.find("?") == -1:
+            return Query.query_string(
+                '"' + terms + '" OR ' + '"' + terms.lower() + '" OR ' + '"' + terms.upper() + '" OR ' + '"' + terms.title() + '"',
+                fields=fields.replace(", ",",").replace(","," ").split(),lowercase_expanded_terms=False
+            )
+        else:
+            return Query.query_string(
+                terms + ' OR ' + terms.lower() + ' OR ' + terms.upper() + ' OR ' + terms.title(),
+                fields=fields.replace(", ",",").replace(","," ").split(),lowercase_expanded_terms=False
+            )
 
 
     def freeSearch(self, searchquery):
         # Elasticsearch connection initialization
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
-        size = 5000
-        # q = ElasticQuery(es=Elasticsearch(),index='shakespeare',doc_type='')
+        size = 500
         index = ""
         # Find all indexes and remove them from the query
         if searchquery.find("\index") != -1:
@@ -68,63 +79,24 @@ class Esearch(models.Model):
             # Code for query creation like "SELECT *** IN *** FILTER *** IN ***"
             if searchquery.count("\in ") == 2 and searchquery.find("\\filter ") != -1:
                 q.query(Query.bool(
-                    must=[Query.query_string(
-                        searchquery[:searchquery.find("\in")] + " OR " + 
-                        searchquery[:searchquery.find("\in")].lower() + " OR " + 
-                        searchquery[:searchquery.find("\in")].upper() + " OR " + 
-                        searchquery[:searchquery.find("\in")].title(),
-                        searchquery[searchquery.find("\in") + 4:searchquery.find("\\filter")].replace(","," ").split(),default_operator='AND'
-                    )],
-                    must_not=[Query.query_string(
-                        searchquery[searchquery.find("\\filter") + 8:searchquery.rfind("\in")] + " OR " + 
-                        searchquery[searchquery.find("\\filter") + 8:searchquery.rfind("\in")].lower() + " OR " + 
-                        searchquery[searchquery.find("\\filter") + 8:searchquery.rfind("\in")].upper() + " OR " + 
-                        searchquery[searchquery.find("\\filter") + 8:searchquery.rfind("\in")].title(),
-                        searchquery[searchquery.rfind("\in") + 4:].replace(","," ").split(),default_operator='AND'
-                    )]
+                    must=[self.compose_query(searchquery[:searchquery.find("\in")-1],searchquery[searchquery.find("\in") + 4:searchquery.find("\\filter")])],
+                    must_not=[self.compose_query(searchquery[searchquery.find("\\filter") + 8:searchquery.rfind("\in")-1],searchquery[searchquery.rfind("\in") + 4:])]
                 ))
             
             # Code for query creation like "SELECT *** IN *** FILTER ***"
             elif searchquery.count("\in ") == 1 and searchquery.find("\\filter ") != -1:
                 q.query(Query.bool(
-                    must=[Query.query_string(
-                        searchquery[:searchquery.find("\in")] + " OR " + 
-                        searchquery[:searchquery.find("\in")].lower() + " OR " + 
-                        searchquery[:searchquery.find("\in")].upper() + " OR " + 
-                        searchquery[:searchquery.find("\in")].title(),
-                        searchquery[searchquery.find("\in") + 4:searchquery.find("\\filter")],default_operator='AND'
-                    )],
-                    must_not=[Query.query_string(
-                        searchquery[searchquery.find("\\filter") + 8:] + " OR " + 
-                        searchquery[searchquery.find("\\filter") + 8:].lower() + " OR " + 
-                        searchquery[searchquery.find("\\filter") + 8:].upper() + " OR " + 
-                        searchquery[searchquery.find("\\filter") + 8:].title(),
-                        "_all",default_operator='AND'
-                    )]
+                    must=[self.compose_query(searchquery[:searchquery.find("\in")],searchquery[searchquery.find("\in") + 4:searchquery.find("\\filter")])],
+                    must_not=[self.compose_query(searchquery[searchquery.find("\\filter") + 8:],"_all")]
                 ))
             
             # Code for query creation like "SELECT *** IN ***"
             elif searchquery.count("\in ") == 1 and searchquery.find("\\filter ") == -1 and searchquery.find("\\filter") == -1:
-                q.query(Query.bool(
-                    must=[Query.query_string(
-                        searchquery[:searchquery.find("\in")-1] + " " + 
-                        searchquery[:searchquery.find("\in")-1].lower() + " " + 
-                        searchquery[:searchquery.find("\in")-1].upper() + " " + 
-                        searchquery[:searchquery.find("\in")-1].title(),
-                        searchquery[searchquery.find("\in") + 4:].replace(","," ").split()
-                    )]
-                ))
+                q.query(self.compose_query(searchquery[:searchquery.find("\in")-1],searchquery[searchquery.find("\in") + 4:]))
     
             # Code for query creation like "SELECT ***"
             elif searchquery.count("\in ") == 0 and searchquery.count("\in") == 0 and searchquery.find("\\filter ") == -1 and searchquery.find("\\filter") == -1:
-                q.query(Query.match(
-                    "_all",(
-                        searchquery + " OR " + 
-                        searchquery.lower() + " OR " + 
-                        searchquery.upper() + " OR " + 
-                        searchquery.title(),
-                    )
-                ))
+                q.query(searchquery,"_all")
             
             # ERROR
             else:
@@ -215,94 +187,36 @@ class Esearch(models.Model):
         # Code for query creation like "MUST (...) SHOULD (...) MUST_NOT(...)"
         if must_fields != "" and should_fields != "" and mustnot_fields != "":
             q.query(Query.bool(
-                        must=[Query.query_string(
-                            must_values + " OR " + 
-                            must_values.lower() + " OR " + 
-                            must_values.upper() + " OR " + 
-                            must_values.title(),
-                            must_fields,default_operator='AND'
-                        )],
-                        should=[Query.query_string(
-                            should_values + " OR " + 
-                            should_values.lower() + " OR " + 
-                            should_values.upper() + " OR " + 
-                            should_values.title(),
-                            should_fields,default_operator='AND'
-                        )],
-                        must_not=[Query.query_string(
-                            mustnot_values + " OR " + 
-                            mustnot_values.lower() + " OR " + 
-                            mustnot_values.upper() + " OR " + 
-                            mustnot_values.title(),
-                            mustnot_fields,default_operator='AND'
-                        )]
-                    ))
+                must=[self.compose_query(must_values,must_fields)],
+                should=[self.compose_query(should_values,should_fields)],
+                must_not=[self.compose_query(mustnot_values,mustnot_fields)]
+            ))
         
         # Code for query creation like "MUST (...) SHOULD (...)"
         elif must_fields != "" and should_fields != "" and mustnot_fields == "":
             q.query(Query.bool(
-                        must=[Query.query_string(
-                            must_values + " OR " + 
-                            must_values.lower() + " OR " + 
-                            must_values.upper() + " OR " + 
-                            must_values.title(),
-                            must_fields,default_operator='AND'
-                        )],
-                        should=[Query.query_string(
-                            should_values + " OR " + 
-                            should_values.lower() + " OR " + 
-                            should_values.upper() + " OR " + 
-                            should_values.title(),
-                            should_fields,default_operator='AND'
-                        )]
-                    ))
+                must=[self.compose_query(must_values,must_fields)],
+                should=[self.compose_query(should_values,should_fields)]
+            ))
         
         # Code for query creation like "SHOULD (...) MUST_NOT(...)"
         elif must_fields == "" and should_fields != "" and mustnot_fields != "":
             q.query(Query.bool(
-                        should=[Query.query_string(
-                            should_values + " OR " + 
-                            should_values.lower() + " OR " + 
-                            should_values.upper() + " OR " + 
-                            should_values.title(),
-                            should_fields,default_operator='AND'
-                        )],
-                        must_not=[Query.query_string(
-                            mustnot_values + " OR " + 
-                            mustnot_values.lower() + " OR " + 
-                            mustnot_values.upper() + " OR " + 
-                            mustnot_values.title(),
-                            mustnot_fields,default_operator='AND'
-                        )]
-                    ))
+                should=[self.compose_query(should_values,should_fields)],
+                must_not=[self.compose_query(mustnot_values,mustnot_fields)]
+            ))
         
         # Code for query creation like "MUST (...) MUST_NOT(...)"
         elif must_fields != "" and should_fields == "" and mustnot_fields != "":
             q.query(Query.bool(
-                        must=[Query.query_string(
-                            must_values + " OR " + 
-                            must_values.lower() + " OR " + 
-                            must_values.upper() + " OR " + 
-                            must_values.title(),
-                            must_fields,default_operator='AND'
-                        )],
-                        must_not=[Query.query_string(
-                            mustnot_values + " OR " + 
-                            mustnot_values.lower() + " OR " + 
-                            mustnot_values.upper() + " OR " + 
-                            mustnot_values.title(),
-                            mustnot_fields,default_operator='AND'
-                        )]
-                    ))
+                must=[self.compose_query(must_values,must_fields)],
+                must_not=[self.compose_query(mustnot_values,mustnot_fields)]
+            ))
                 
         # Code for query creation like "MUST (...)"
         elif must_fields != "" and should_fields == "" and mustnot_fields == "":
-            q.query(Query.query_string(
-                must_values + " OR " + 
-                must_values.lower() + " OR " + 
-                must_values.upper() + " OR " + 
-                must_values.title(),
-                must_fields,default_operator='AND'
+            q.query(Query.bool(
+                must=[self.compose_query(must_values,must_fields)]
             ))
         
         # ERROR
