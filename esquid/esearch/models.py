@@ -50,8 +50,9 @@ class Esearch(models.Model):
     # Code used to compose query_string with or without '"', based on wildcards find
     def compose_query(self,terms,fields):
         if terms.find("*") == -1 and terms.find("?") == -1:
+            terms = terms.replace(' ','" OR "')
             return Query.query_string(
-                '"' + terms + '" OR ' + '"' + terms.lower() + '" OR ' + '"' + terms.upper() + '" OR ' + '"' + terms.title() + '"',
+                '("' + terms + '") OR (' + '"' + terms.lower() + '") OR (' + '"' + terms.upper() + '") OR (' + '"' + terms.title() + '")',
                 fields=fields.replace(", ",",").replace(","," ").split(),lowercase_expanded_terms=False
             )
         else:
@@ -104,6 +105,7 @@ class Esearch(models.Model):
         else:
             return HttpResponse('Server: Wrong query syntax!')
 
+        print q.json()
         return q.get()
 
 
