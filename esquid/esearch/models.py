@@ -50,8 +50,9 @@ class Esearch(models.Model):
     # Code used to compose query_string with or without '"', based on wildcards find
     def compose_query(self,terms,fields):
         if terms.find("*") == -1 and terms.find("?") == -1:
+            terms = terms.replace(' ','" OR "')
             return Query.query_string(
-                '"' + terms + '" OR ' + '"' + terms.lower() + '" OR ' + '"' + terms.upper() + '" OR ' + '"' + terms.title() + '"',
+                '("' + terms + '") OR (' + '"' + terms.lower() + '") OR (' + '"' + terms.upper() + '") OR (' + '"' + terms.title() + '")',
                 fields=fields.replace(", ",",").replace(","," ").split(),lowercase_expanded_terms=False
             )
         else:
@@ -104,6 +105,7 @@ class Esearch(models.Model):
         else:
             return HttpResponse('Server: Wrong query syntax!')
 
+        print q.json()
         return q.get()
 
 
@@ -126,7 +128,7 @@ class Esearch(models.Model):
             if count != 1:
                 query = query[query.index(")(") + 1:]
             count = count - 1
-        return indexes[:len(indexes) - 1]
+        return indexes[:-1]
     
 
     # Function that remove all duplicates found in a string
@@ -143,7 +145,7 @@ class Esearch(models.Model):
     # Function that splits the entire query into max three parts, each for MUST, SHOULD or MUST NOT condition
     def return_elements(self,query,conditions):
         result = re.search('%' + conditions + '%.*?%', query).group()
-        result = result[:len(result) - 2].replace('%' + conditions + '%',"")
+        result = result[:len(result)].replace('%' + conditions + '%',"")
         return result
 
 
@@ -164,17 +166,17 @@ class Esearch(models.Model):
         if query.find("%MUST%") != -1:
             result = self.return_elements(query,"MUST")
             must_fields = self.return_values(result,".","=")
-            must_fields = must_fields[:len(self.remove_dupl(must_fields)) - 1]
+            must_fields = must_fields[:len(self.remove_dupl(must_fields))]
             must_values = self.return_values(result,"=",")")
         if query.find("%SHOULD%") != -1:
             result = self.return_elements(query,"SHOULD")
             should_fields = self.return_values(result,".","=")
-            should_fields = should_fields[:len(self.remove_dupl(should_fields)) - 1]
+            should_fields = should_fields[:len(self.remove_dupl(should_fields))]
             should_values = self.return_values(result,"=",")")
         if query.find("%MUST_NOT%") != -1:
             result = self.return_elements(query,"MUST_NOT")
             mustnot_fields = self.return_values(result,".","=")
-            mustnot_fields = mustnot_fields[:len(self.remove_dupl(mustnot_fields)) - 1]
+            mustnot_fields = mustnot_fields[:len(self.remove_dupl(mustnot_fields))]
             mustnot_values = self.return_values(result,"=",")")
         
         # Elasticsearch connection initialization
