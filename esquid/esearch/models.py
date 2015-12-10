@@ -47,17 +47,19 @@ class Esearch(models.Model):
 
         return values
 
+
     # Code used to compose query_string with or without '"', based on wildcards find
     def compose_query(self,terms,fields):
         if terms.find("*") == -1 and terms.find("?") == -1:
-            terms = terms.replace(', ','" OR "').replace(',','" OR "')
+            terms = terms.replace(', ',',').replace(',','" OR "')
             return Query.query_string(
-                '("' + terms + '") OR (' + '"' + terms.lower() + '") OR (' + '"' + terms.upper() + '") OR (' + '"' + terms.title() + '")',
+                '("' + terms + '") OR ("' + terms.lower() + '") OR ("' + terms.upper() + '") OR ("' + terms.title() + '")',
                 fields=fields.replace(", ",",").replace(","," ").split(),lowercase_expanded_terms=False
             )
         else:
+            terms = terms.replace(', ',',').replace(',',' OR ')
             return Query.query_string(
-                terms + ' OR ' + terms.lower() + ' OR ' + terms.upper() + ' OR ' + terms.title(),
+                '(' + terms + ') OR (' + terms.lower() + ') OR (' + terms.upper() + ') OR (' + terms.title() + ')',
                 fields=fields.replace(", ",",").replace(","," ").split(),lowercase_expanded_terms=False
             )
 
@@ -65,7 +67,7 @@ class Esearch(models.Model):
     def freeSearch(self, searchquery):
         # Elasticsearch connection initialization
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
-        size = 500
+        size = 500000
         index = ""
         # Find all indexes and remove them from the query
         if searchquery.find("\index") != -1:
@@ -87,7 +89,7 @@ class Esearch(models.Model):
             # Code for query creation like "SELECT *** IN *** FILTER ***"
             elif searchquery.count("\in ") == 1 and searchquery.find("\\filter ") != -1:
                 q.query(Query.bool(
-                    must=[self.compose_query(searchquery[:searchquery.find("\in")],searchquery[searchquery.find("\in") + 4:searchquery.find("\\filter")])],
+                    must=[self.compose_query(searchquery[:searchquery.find("\in")-1],searchquery[searchquery.find("\in") + 4:searchquery.find("\\filter")])],
                     must_not=[self.compose_query(searchquery[searchquery.find("\\filter") + 8:],"_all")]
                 ))
             
@@ -105,7 +107,6 @@ class Esearch(models.Model):
         else:
             return HttpResponse('Server: Wrong query syntax!')
 
-        print q.get()
         return q.get()
 
 
@@ -116,7 +117,6 @@ class Esearch(models.Model):
         q.query(Query.query_string(search,field,default_operator='OR',analyze_wildcard=True))
         q.fields(field)
         ElasticQuery.sort(q,"_score",order="desc")
-        print q.get()
     
 
     # Function that returns index name, fields name or values
@@ -160,7 +160,7 @@ class Esearch(models.Model):
         all_indexes = ""
 
         # Remove space on query string and add % as prefix and suffix 
-        query = query.replace("MUST ","%MUST%").replace("SHOULD ","%SHOULD%").replace("MUST_NOT ","%MUST_NOT%") + " %"
+        query = query.replace(") (",")(").replace("MUST ","%MUST%").replace("SHOULD ","%SHOULD%").replace("MUST_NOT ","%MUST_NOT%") + " %"
         
         # Populate class variables with values only if the relative condition is present on our query
         if query.find("%MUST%") != -1:
@@ -219,6 +219,18 @@ class Esearch(models.Model):
         elif must_fields != "" and should_fields == "" and mustnot_fields == "":
             q.query(Query.bool(
                 must=[self.compose_query(must_values,must_fields)]
+            ))
+
+        # Code for query creation like "SHOULD (...)"
+        elif must_fields == "" and should_fields != "" and mustnot_fields == "":
+            q.query(Query.bool(
+                should=[self.compose_query(should_values,should_fields)]
+            ))
+
+        # Code for query creation like "MUST_NOT (...)"
+        elif must_fields == "" and should_fields == "" and mustnot_fields != "":
+            q.query(Query.bool(
+                must_not=[self.compose_query(mustnot_values,mustnot_fields)]
             ))
         
         # ERROR
