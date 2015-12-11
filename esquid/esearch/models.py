@@ -161,7 +161,7 @@ class Esearch(models.Model):
         all_indexes = ""
 
         # Remove space on query string and add % as prefix and suffix searchquery = re.sub(r'\s+', ' ', searchquery)
-        query = re.sub(r'\s+', ' ', query).replace(") (",")(").replace("MUST ","%MUST%").replace("SHOULD ","%SHOULD%").replace("MUST_NOT ","%MUST_NOT%") + " %"
+        query = re.sub(r'\s+', ' ', query).replace(") (",")(").replace("MUST(","%MUST%(").replace("SHOULD(","%SHOULD%(").replace("MUST_NOT(","%MUST_NOT%(").replace("MUST (","%MUST%(").replace("SHOULD (","%SHOULD%(").replace("MUST_NOT (","%MUST_NOT%(") + " %"
         
         # Populate class variables with values only if the relative condition is present on our query
         if query.find("%MUST%") != -1:
