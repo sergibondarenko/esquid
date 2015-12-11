@@ -66,7 +66,7 @@ class Esearch(models.Model):
     def freeSearch(self, searchquery):
         # Elasticsearch connection initialization
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
-        size = 500000
+        size = 500
         index = ""
         # Find all indexes and remove them from the query
         if searchquery.find("\index") != -1:
@@ -98,7 +98,10 @@ class Esearch(models.Model):
     
             # Code for query creation like "SELECT ***"
             elif searchquery.count("\in ") == 0 and searchquery.count("\in") == 0 and searchquery.find("\\filter ") == -1 and searchquery.find("\\filter") == -1:
-                q.query(self.compose_query(searchquery,"_all"))
+                if searchquery == '*':
+                    q.query(Query.match_all())
+                else:
+                    q.query(self.compose_query(searchquery,"_all"))
             
             # ERROR
             else:
