@@ -50,7 +50,7 @@ class Esearch(models.Model):
 
     # Code used to compose query_string with or without '"', based on wildcards find
     def compose_query(self,terms,fields):
-        terms = terms.replace(', ',',').replace(" ","_").replace(","," ").split()
+        terms = terms.replace(' ,',',').replace(', ',',').replace(" ","_").replace(","," ").split()
         result = ''
         for each in terms:
             if each.find("*") == -1 and each.find("?") == -1:
@@ -64,9 +64,10 @@ class Esearch(models.Model):
 
 
     def freeSearch(self, searchquery):
+        searchquery = re.sub(r'\s+', ' ', searchquery)
         # Elasticsearch connection initialization
         es = Elasticsearch(hosts = [{"host": self.host, "port": self.port}])
-        size = 500000
+        size = 500
         index = ""
         # Find all indexes and remove them from the query
         if searchquery.find("\index") != -1:
@@ -141,6 +142,7 @@ class Esearch(models.Model):
                 terms = terms + term + ","
         return terms
     
+
     # Function that splits the entire query into max three parts, each for MUST, SHOULD or MUST NOT condition
     def return_elements(self,query,conditions):
         result = re.search('%' + conditions + '%.*?%', query).group()
@@ -158,8 +160,8 @@ class Esearch(models.Model):
         mustnot_values = ""
         all_indexes = ""
 
-        # Remove space on query string and add % as prefix and suffix 
-        query = query.replace(") (",")(").replace("MUST ","%MUST%").replace("SHOULD ","%SHOULD%").replace("MUST_NOT ","%MUST_NOT%") + " %"
+        # Remove space on query string and add % as prefix and suffix searchquery = re.sub(r'\s+', ' ', searchquery)
+        query = re.sub(r'\s+', ' ', query).replace(") (",")(").replace("MUST ","%MUST%").replace("SHOULD ","%SHOULD%").replace("MUST_NOT ","%MUST_NOT%") + " %"
         
         # Populate class variables with values only if the relative condition is present on our query
         if query.find("%MUST%") != -1:
