@@ -50,18 +50,17 @@ class Esearch(models.Model):
 
     # Code used to compose query_string with or without '"', based on wildcards find
     def compose_query(self,terms,fields):
-        if terms.find("*") == -1 and terms.find("?") == -1:
-            terms = terms.replace(', ',',').replace(',','" OR "')
-            return Query.query_string(
-                '("' + terms + '") OR ("' + terms.lower() + '") OR ("' + terms.upper() + '") OR ("' + terms.title() + '")',
-                fields=fields.replace(", ",",").replace(","," ").split(),lowercase_expanded_terms=False
-            )
-        else:
-            terms = terms.replace(', ',',').replace(',',' OR ')
-            return Query.query_string(
-                '(' + terms + ') OR (' + terms.lower() + ') OR (' + terms.upper() + ') OR (' + terms.title() + ')',
-                fields=fields.replace(", ",",").replace(","," ").split(),lowercase_expanded_terms=False
-            )
+        terms = terms.replace(', ',',').replace(" ","_").replace(","," ").split()
+        result = ''
+        for each in terms:
+            if each.find("*") == -1 and each.find("?") == -1:
+                result = result + '"' + each.replace("_"," ") + '" '
+            else:
+                result = result + each.replace("_"," ") + ' '
+        return Query.query_string(
+            '(' + result[:-1] + ') OR (' + result[:-1].lower() + ') OR (' + result[:-1].upper() + ') OR (' + result[:-1].title() + ')',
+            fields=fields.replace(", ",",").replace(","," ").split(),lowercase_expanded_terms=False
+        )
 
 
     def freeSearch(self, searchquery):
